@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build and test
-    runs-on: buildjet-4vcpu-ubuntu-2004
+    runs-on: ubuntu-latest
 
     services:
       postgres:
@@ -59,7 +59,7 @@ jobs:
       - name: Check Formatting
         run: mix format --check-formatted
       - name: Check Compile Warnings
-        run: mix compile --warnings-as-errors --all-warnings
+        run: mix compile --all-warnings
       - name: Run tests
         run: mix test
       #- name: Check Dialyzer
