@@ -3,8 +3,6 @@ defmodule Plausible.ClickhouseSession do
 
   import Ecto.Changeset
 
-  alias Plausible.ValueHelpers
-
   @primary_key false
   schema "sessions" do
     field :hostname, :string
@@ -31,6 +29,7 @@ defmodule Plausible.ClickhouseSession do
     field :referrer, :string
     field :referrer_source, :string
     field :campaign_id, :string
+    field :contract_id, :string
     field :product_id, :string
 
     field :country_code, :string, default: ""
@@ -84,26 +83,11 @@ defmodule Plausible.ClickhouseSession do
     ])
     |> validate_required([:hostname, :domain, :fingerprint, :is_bounce, :start])
     |> validate_campaign_id()
+    |> validate_contract_id()
     |> validate_product_id()
   end
 
-  defp validate_campaign_id(changeset) do
-    campaign_id = get_field(changeset, :campaign_id)
-
-    if ValueHelpers.validate(campaign_id, type: :prefixed_id) do
-      changeset
-    else
-      delete_change(changeset, :campaign_id)
-    end
-  end
-
-  defp validate_product_id(changeset) do
-    product_id = get_field(changeset, :product_id)
-
-    if ValueHelpers.validate(product_id, type: :prefixed_id) do
-      changeset
-    else
-      delete_change(changeset, :product_id)
-    end
-  end
+  defdelegate validate_campaign_id(changeset), to: Plausible.ClickhouseEvent
+  defdelegate validate_contract_id(changeset), to: Plausible.ClickhouseEvent
+  defdelegate validate_product_id(changeset), to: Plausible.ClickhouseEvent
 end

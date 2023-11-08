@@ -499,6 +499,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
         domain: "special-props-test.com",
         props: %{
           campaign_id: "vendor-8",
+          contract_id: "vendor-10",
           company_id: 10,
           job_id: 12,
           page_id: 15,
@@ -514,6 +515,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
       event = get_event("special-props-test.com")
 
       assert Map.get(event, :campaign_id) == "vendor-8"
+      assert Map.get(event, :contract_id) == "vendor-10"
       assert Map.get(event, :product_id) == "vendor-6a01cfb6-717a-11ee-b962-0242ac120002"
       assert Map.get(event, :company_id) == 10
       assert Map.get(event, :job_id) == 12
@@ -534,6 +536,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
         domain: "special-props-validation-test.com",
         props: %{
           campaign_id: "12345",
+          contract_id: "vendor",
           company_id: 10,
           page_id: 15,
           product_id: "incorrect-product-id",
@@ -547,6 +550,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
       event = get_event("special-props-validation-test.com")
 
       assert Map.get(event, :campaign_id) == ""
+      assert Map.get(event, :contract_id) == ""
       assert Map.get(event, :product_id) == ""
       assert Map.get(event, :company_id) == 10
       assert Map.get(event, :page_id) == 15

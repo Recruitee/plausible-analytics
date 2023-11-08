@@ -139,6 +139,7 @@ defmodule Plausible.Session.Store do
       site_id: event.site_id,
       session_id: Plausible.ClickhouseSession.random_uint64(),
       campaign_id: event.campaign_id,
+      contract_id: event.contract_id,
       product_id: event.product_id,
       hostname: event.hostname,
       domain: event.domain,

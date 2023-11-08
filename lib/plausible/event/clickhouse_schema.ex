@@ -28,6 +28,7 @@ defmodule Plausible.ClickhouseEvent do
     field :utm_content, :string, default: ""
     field :utm_term, :string, default: ""
     field :campaign_id, :string, default: ""
+    field :contract_id, :string, default: ""
     field :product_id, :string, default: ""
 
     field :country_code, :string, default: ""
@@ -67,6 +68,7 @@ defmodule Plausible.ClickhouseEvent do
         :page_id,
         :job_id,
         :campaign_id,
+        :contract_id,
         :product_id,
         :timestamp,
         :operating_system,
@@ -93,10 +95,11 @@ defmodule Plausible.ClickhouseEvent do
     )
     |> validate_required([:name, :domain, :hostname, :pathname, :event_id, :user_id, :timestamp])
     |> validate_campaign_id()
+    |> validate_contract_id()
     |> validate_product_id()
   end
 
-  defp validate_campaign_id(changeset) do
+  def validate_campaign_id(changeset) do
     campaign_id = get_field(changeset, :campaign_id)
 
     if ValueHelpers.validate(campaign_id, type: :prefixed_id) do
@@ -106,7 +109,17 @@ defmodule Plausible.ClickhouseEvent do
     end
   end
 
-  defp validate_product_id(changeset) do
+  def validate_contract_id(changeset) do
+    contract_id = get_field(changeset, :contract_id)
+
+    if ValueHelpers.validate(contract_id, type: :prefixed_id) do
+      changeset
+    else
+      delete_change(changeset, :contract_id)
+    end
+  end
+
+  def validate_product_id(changeset) do
     product_id = get_field(changeset, :product_id)
 
     if ValueHelpers.validate(product_id, type: :prefixed_id) do

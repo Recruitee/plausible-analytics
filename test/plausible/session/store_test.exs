@@ -30,6 +30,7 @@ defmodule Plausible.Session.StoreTest do
         operating_system: "Mac",
         operating_system_version: "11",
         campaign_id: 1,
+        contract_id: 1,
         product_id: 1
       )
 
@@ -58,6 +59,7 @@ defmodule Plausible.Session.StoreTest do
     assert session.operating_system == event.operating_system
     assert session.operating_system_version == event.operating_system_version
     assert session.campaign_id == event.campaign_id
+    assert session.contract_id == event.contract_id
     assert session.product_id == event.product_id
     assert session.browser == event.browser
     assert session.browser_version == event.browser_version
