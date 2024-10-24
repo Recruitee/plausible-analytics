@@ -493,7 +493,7 @@ defmodule PlausibleWeb.Api.ExternalController do
   defp get_subdivision_code(nil, _), do: ""
 
   defp get_subdivision_code(geo_data, n) do
-    subdivisions = Map.get(geo_data, "subdivision", [])
+    subdivisions = Map.get(geo_data, "subdivisions", [])
     country_code = get_country_code(geo_data)
 
     case Enum.at(subdivisions, n) do
