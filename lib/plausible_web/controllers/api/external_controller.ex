@@ -453,8 +453,11 @@ defmodule PlausibleWeb.Api.ExternalController do
     ip = PlausibleWeb.RemoteIp.get(conn)
 
     case :locus.lookup(:geolocation, ip) do
-      {:ok, result} -> get_location_details(result)
-      _ -> get_location_details(%{})
+      {:ok, result} ->
+        get_location_details(result)
+
+      _ ->
+        get_location_details(nil)
     end
   end
 
@@ -467,7 +470,7 @@ defmodule PlausibleWeb.Api.ExternalController do
     }
   end
 
-  defp get_country_code(%{}), do: ""
+  defp get_country_code(nil), do: ""
 
   defp get_country_code(geo_data) do
     geo_data
@@ -476,7 +479,7 @@ defmodule PlausibleWeb.Api.ExternalController do
     |> ignore_unknown_country()
   end
 
-  defp get_city_geoname_id(%{}), do: ""
+  defp get_city_geoname_id(nil), do: ""
 
   defp get_city_geoname_id(geo_data) do
     city =
@@ -487,7 +490,7 @@ defmodule PlausibleWeb.Api.ExternalController do
     Map.get(@city_overrides, city, city)
   end
 
-  defp get_subdivision_code(%{}, _), do: ""
+  defp get_subdivision_code(nil, _), do: ""
 
   defp get_subdivision_code(geo_data, n) do
     subdivisions = Map.get(geo_data, "subdivision", [])
