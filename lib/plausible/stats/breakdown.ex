@@ -1,6 +1,6 @@
 defmodule Plausible.Stats.Breakdown do
   use Plausible.ClickhouseRepo
-  import Plausible.Stats.{Base, Imported}
+  import Plausible.Stats.Base
   alias Plausible.Stats.Query
   @no_ref "Direct / None"
 
@@ -9,9 +9,7 @@ defmodule Plausible.Stats.Breakdown do
   @event_props ["event:page", "event:page_match", "event:name"]
 
   def breakdown(site, query, "event:goal", metrics, pagination) do
-    {event_goals, pageview_goals} =
-      Plausible.Repo.all(from g in Plausible.Goal, where: g.domain == ^site.domain)
-      |> Enum.split_with(fn goal -> goal.event_name end)
+    {event_goals, pageview_goals} = {[], []}
 
     events = Enum.map(event_goals, & &1.event_name)
     event_query = %Query{query | filters: Map.put(query.filters, "event:name", {:member, events})}
@@ -202,7 +200,6 @@ defmodule Plausible.Stats.Breakdown do
     |> filter_converted_sessions(site, query)
     |> do_group_by(property)
     |> select_session_metrics(metrics)
-    |> merge_imported(site, query, property, metrics)
     |> apply_pagination(pagination)
     |> ClickhouseRepo.all()
     |> transform_keys(%{operating_system: :os})
@@ -217,7 +214,6 @@ defmodule Plausible.Stats.Breakdown do
     )
     |> do_group_by(property)
     |> select_event_metrics(metrics)
-    |> merge_imported(site, query, property, metrics)
     |> apply_pagination(pagination)
     |> ClickhouseRepo.all()
     |> transform_keys(%{operating_system: :os})
@@ -244,12 +240,7 @@ defmodule Plausible.Stats.Breakdown do
 
     {base_query_raw, base_query_raw_params} = ClickhouseRepo.to_sql(:all, q)
 
-    select =
-      if query.include_imported do
-        "sum(td), count(case when p2 != p then 1 end)"
-      else
-        "round(sum(td)/count(case when p2 != p then 1 end))"
-      end
+    select = "round(sum(td)/count(case when p2 != p then 1 end))"
 
     time_query = "
       SELECT
@@ -273,38 +264,7 @@ defmodule Plausible.Stats.Breakdown do
 
     {:ok, res} = ClickhouseRepo.query(time_query, base_query_raw_params ++ [pages])
 
-    if query.include_imported do
-      # Imported page views have pre-calculated values
-      res =
-        res.rows
-        |> Enum.map(fn [page, time, visits] -> {page, {time, visits}} end)
-        |> Enum.into(%{})
-
-      from(
-        i in "imported_pages",
-        group_by: i.page,
-        where: i.site_id == ^site.id,
-        where: i.date >= ^query.date_range.first and i.date <= ^query.date_range.last,
-        where: i.page in ^pages,
-        select: %{
-          page: i.page,
-          pageviews: fragment("sum(?) - sum(?)", i.pageviews, i.exits),
-          time_on_page: sum(i.time_on_page)
-        }
-      )
-      |> ClickhouseRepo.all()
-      |> Enum.reduce(res, fn %{page: page, pageviews: pageviews, time_on_page: time}, res ->
-        {restime, resviews} = Map.get(res, page, {0, 0})
-        Map.put(res, page, {restime + time, resviews + pageviews})
-      end)
-      |> Enum.map(fn
-        {page, {_, 0}} -> {page, nil}
-        {page, {time, pageviews}} -> {page, time / pageviews}
-      end)
-      |> Enum.into(%{})
-    else
-      res.rows |> Enum.map(fn [page, time] -> {page, time} end) |> Enum.into(%{})
-    end
+    res.rows |> Enum.map(fn [page, time] -> {page, time} end) |> Enum.into(%{})
   end
 
   defp do_group_by(

@@ -46,7 +46,7 @@ defmodule PlausibleWeb.StatsControllerTest do
   end
 
   describe "GET /:website - as a super admin" do
-    setup [:create_user, :make_user_super_admin, :log_in]
+    setup [:create_user, :log_in]
 
     test "can view a private dashboard with stats", %{conn: conn} do
       site = insert(:site)
@@ -89,10 +89,6 @@ defmodule PlausibleWeb.StatsControllerTest do
       conn = get(conn, "/" <> site.domain)
       assert html_response(conn, 200) =~ "stats-react-container"
     end
-  end
-
-  defp make_user_super_admin(%{user: user}) do
-    Application.put_env(:plausible, :super_admin_user_ids, [user.id])
   end
 
   describe "GET /:website/export" do

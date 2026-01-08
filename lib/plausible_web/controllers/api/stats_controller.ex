@@ -30,9 +30,7 @@ defmodule PlausibleWeb.Api.StatsController do
       present_index: present_index,
       top_stats: top_stats,
       interval: query.interval,
-      sample_percent: sample_percent,
-      with_imported: query.include_imported,
-      imported_source: site.imported_data && site.imported_data.source
+      sample_percent: sample_percent
     })
   end
 

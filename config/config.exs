@@ -20,10 +20,6 @@ config :ref_inspector,
   database_path: "priv/ref_inspector"
 
 config :plausible,
-  paddle_api: Plausible.Billing.PaddleApi,
-  google_api: Plausible.Google.Api
-
-config :plausible,
   # 30 minutes
   session_timeout: 1000 * 60 * 30,
   session_length_minutes: 30

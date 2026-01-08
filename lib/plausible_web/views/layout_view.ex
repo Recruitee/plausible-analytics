@@ -13,47 +13,7 @@ defmodule PlausibleWeb.LayoutView do
     PlausibleWeb.Endpoint.url()
   end
 
-  def home_dest(conn) do
-    if conn.assigns[:current_user] do
-      "/sites"
-    else
-      "/"
-    end
-  end
-
-  def settings_tabs(conn) do
-    [
-      [key: "General", value: "general"],
-      [key: "People", value: "people"],
-      [key: "Visibility", value: "visibility"],
-      [key: "Goals", value: "goals"],
-      [key: "Search Console", value: "search-console"],
-      [key: "Email reports", value: "email-reports"],
-      if !is_selfhost() && conn.assigns[:site].custom_domain do
-        [key: "Custom domain", value: "custom-domain"]
-      else
-        nil
-      end,
-      if conn.assigns[:current_user_role] == :owner do
-        [key: "Danger zone", value: "danger-zone"]
-      else
-        nil
-      end
-    ]
-  end
-
-  def trial_notificaton(user) do
-    case Plausible.Billing.trial_days_left(user) do
-      days when days > 1 ->
-        "#{days} trial days left"
-
-      days when days == 1 ->
-        "Trial ends tomorrow"
-
-      days when days == 0 ->
-        "Trial ends today"
-    end
-  end
+  def trial_notificaton(_user), do: "Trial ends tomorrow"
 
   def on_grace_period?(nil), do: false
 
@@ -86,9 +46,5 @@ defmodule PlausibleWeb.LayoutView do
 
   def is_current_tab(conn, tab) do
     List.last(conn.path_info) == tab
-  end
-
-  defp is_selfhost() do
-    Application.get_env(:plausible, :is_selfhost)
   end
 end
