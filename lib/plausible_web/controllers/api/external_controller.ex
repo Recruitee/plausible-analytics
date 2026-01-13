@@ -1,6 +1,7 @@
 defmodule PlausibleWeb.Api.ExternalController do
   use PlausibleWeb, :controller
-  use OpenTelemetryDecorator
+  # telemetry will be brought back once we integrate the plausible codebase
+  # use OpenTelemetryDecorator
   require Logger
 
   def event(conn, _params) do
@@ -46,7 +47,7 @@ defmodule PlausibleWeb.Api.ExternalController do
     })
   end
 
-  @decorate trace("ingest.parse_user_agent")
+  # @decorate trace("ingest.parse_user_agent")
   defp parse_user_agent(conn) do
     user_agent = Plug.Conn.get_req_header(conn, "user-agent") |> List.first()
 
@@ -81,7 +82,7 @@ defmodule PlausibleWeb.Api.ExternalController do
 
     ua = parse_user_agent(conn)
 
-    blacklist_domain = params["domain"] in Application.get_env(:plausible, :domain_blacklist)
+    blacklist_domain = params["domain"] in []
     referrer_spam = is_spammer?(params["referrer"])
 
     if is_bot?(ua) || blacklist_domain || referrer_spam do
@@ -448,7 +449,7 @@ defmodule PlausibleWeb.Api.ExternalController do
     2_647_694 => 2_643_743
   }
 
-  @decorate trace("ingest.geolocation")
+  # @decorate trace("ingest.geolocation")
   defp visitor_location_details(conn) do
     ip = PlausibleWeb.RemoteIp.get(conn)
 
@@ -505,7 +506,7 @@ defmodule PlausibleWeb.Api.ExternalController do
   defp ignore_unknown_country("ZZ"), do: ""
   defp ignore_unknown_country(country), do: country
 
-  @decorate trace("ingest.parse_referrer")
+  # @decorate trace("ingest.parse_referrer")
   defp parse_referrer(_, nil), do: nil
 
   defp parse_referrer(uri, referrer_str) do

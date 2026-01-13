@@ -12,14 +12,6 @@ config :plausible, Plausible.ClickhouseRepo,
   loggers: [Ecto.LogEntry],
   pool_size: 5
 
-config :plausible, Plausible.Mailer, adapter: Bamboo.TestAdapter
-
-config :plausible,
-  paddle_api: Plausible.PaddleApi.Mock,
-  google_api: Plausible.Google.Api.Mock
-
-config :bamboo, :refute_timeout, 10
-
 config :geolix,
   databases: [
     %{

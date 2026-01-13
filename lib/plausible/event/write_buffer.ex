@@ -1,7 +1,8 @@
 defmodule Plausible.Event.WriteBuffer do
   use GenServer
   require Logger
-  use OpenTelemetryDecorator
+  # telemetry will be brought back once we integrate the plausible codebase
+  # use OpenTelemetryDecorator
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -55,7 +56,7 @@ defmodule Plausible.Event.WriteBuffer do
     do_flush(buffer)
   end
 
-  @decorate trace("ingest.flush_events")
+  # @decorate trace("ingest.flush_events")
   defp do_flush(buffer) do
     case buffer do
       [] ->

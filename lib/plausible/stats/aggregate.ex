@@ -1,7 +1,7 @@
 defmodule Plausible.Stats.Aggregate do
   alias Plausible.Stats.Query
   use Plausible.ClickhouseRepo
-  import Plausible.Stats.{Base, Imported}
+  import Plausible.Stats.Base
 
   @event_metrics [:visitors, :pageviews, :events, :sample_percent]
   @session_metrics [:visits, :bounce_rate, :visit_duration, :sample_percent]
@@ -53,7 +53,6 @@ defmodule Plausible.Stats.Aggregate do
   defp aggregate_events(site, query, metrics) do
     from(e in base_event_query(site, query), select: %{})
     |> select_event_metrics(metrics)
-    |> merge_imported(site, query, :aggregate, metrics)
     |> ClickhouseRepo.one()
   end
 
@@ -73,7 +72,6 @@ defmodule Plausible.Stats.Aggregate do
     from(e in query_sessions(site, query), select: %{})
     |> filter_converted_sessions(site, query)
     |> select_session_metrics(metrics)
-    |> merge_imported(site, query, :aggregate, metrics)
     |> ClickhouseRepo.one()
   end
 

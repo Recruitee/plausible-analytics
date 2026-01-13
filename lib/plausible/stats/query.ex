@@ -3,8 +3,7 @@ defmodule Plausible.Stats.Query do
             interval: nil,
             period: nil,
             filters: %{},
-            sample_threshold: 20_000_000,
-            include_imported: false
+            sample_threshold: 20_000_000
 
   @default_sample_threshold 20_000_000
 
@@ -46,8 +45,7 @@ defmodule Plausible.Stats.Query do
       interval: "minute",
       date_range: Date.range(date, date),
       filters: parse_filters(params),
-      sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold),
-      include_imported: false
+      sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
   end
 
@@ -73,7 +71,6 @@ defmodule Plausible.Stats.Query do
       filters: parse_filters(params),
       sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
-    |> maybe_include_imported(site, params)
   end
 
   def from(%{domain: "all"} = site, %{"period" => "7d"} = params) do
@@ -100,7 +97,6 @@ defmodule Plausible.Stats.Query do
       filters: parse_filters(params),
       sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
-    |> maybe_include_imported(site, params)
   end
 
   def from(%{domain: "all"} = site, %{"period" => "30d"} = params) do
@@ -127,7 +123,6 @@ defmodule Plausible.Stats.Query do
       filters: parse_filters(params),
       sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
-    |> maybe_include_imported(site, params)
   end
 
   def from(%{domain: "all"} = site, %{"period" => "month"} = params) do
@@ -158,7 +153,6 @@ defmodule Plausible.Stats.Query do
       filters: parse_filters(params),
       sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
-    |> maybe_include_imported(site, params)
   end
 
   def from(%{domain: "all"} = site, %{"period" => "6mo"} = params) do
@@ -195,7 +189,6 @@ defmodule Plausible.Stats.Query do
       filters: parse_filters(params),
       sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
-    |> maybe_include_imported(site, params)
   end
 
   def from(%{domain: "all"} = site, %{"period" => "12mo"} = params) do
@@ -232,7 +225,6 @@ defmodule Plausible.Stats.Query do
       filters: parse_filters(params),
       sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
-    |> maybe_include_imported(site, params)
   end
 
   def from(site, %{"period" => "custom", "from" => from, "to" => to} = params) do
@@ -259,7 +251,7 @@ defmodule Plausible.Stats.Query do
     }
   end
 
-  def from(site, %{"period" => "custom", "date" => date} = params) do
+  def from(_site, %{"period" => "custom", "date" => date} = params) do
     [from, to] = String.split(date, ",")
     from_date = Date.from_iso8601!(String.trim(from))
     to_date = Date.from_iso8601!(String.trim(to))
@@ -271,7 +263,6 @@ defmodule Plausible.Stats.Query do
       filters: parse_filters(params),
       sample_threshold: Map.get(params, "sample_threshold", @default_sample_threshold)
     }
-    |> maybe_include_imported(site, params)
   end
 
   def from(tz, params) do
@@ -359,19 +350,4 @@ defmodule Plausible.Stats.Query do
 
   defp parse_goal_filter("Visit " <> page), do: {:is, :page, page}
   defp parse_goal_filter(event), do: {:is, :event, event}
-
-  defp maybe_include_imported(query, site, params) do
-    imported_data_requested = params["with_imported"] == "true"
-    has_imported_data = site.imported_data && site.imported_data.status == "ok"
-
-    date_range_overlaps =
-      has_imported_data && !Timex.after?(query.date_range.first, site.imported_data.end_date)
-
-    no_filters_applied = Enum.empty?(query.filters)
-
-    include_imported =
-      imported_data_requested && has_imported_data && date_range_overlaps && no_filters_applied
-
-    %{query | include_imported: !!include_imported}
-  end
 end

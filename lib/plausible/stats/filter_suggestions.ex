@@ -116,16 +116,7 @@ defmodule Plausible.Stats.FilterSuggestions do
     end)
   end
 
-  def filter_suggestions(site, _query, "goal", filter_search) do
-    Repo.all(from g in Plausible.Goal, where: g.domain == ^site.domain)
-    |> Enum.map(fn x -> if x.event_name, do: x.event_name, else: "Visit #{x.page_path}" end)
-    |> Enum.filter(fn goal ->
-      String.contains?(
-        String.downcase(goal),
-        String.downcase(filter_search)
-      )
-    end)
-  end
+  def filter_suggestions(_site, _query, "goal", _filter_search), do: []
 
   def filter_suggestions(site, query, filter_name, filter_search) do
     filter_search = if filter_search == nil, do: "", else: filter_search
