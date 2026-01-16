@@ -6,6 +6,8 @@ defmodule Plausible.Stats.Timeseries do
 
   @event_metrics [:visitors, :pageviews]
   @session_metrics [:visits, :bounce_rate, :visit_duration]
+  @timezone "Europe/Warsaw"
+
   def timeseries(site, query, metrics) do
     steps = buckets(query)
 
@@ -74,35 +76,35 @@ defmodule Plausible.Stats.Timeseries do
     Enum.into(-30..-1, [])
   end
 
-  def select_bucket(q, site, %Query{interval: "month"}) do
+  def select_bucket(q, _site, %Query{interval: "month"}) do
     from(
       e in q,
-      group_by: fragment("toStartOfMonth(toTimeZone(?, ?))", e.timestamp, ^site.timezone),
-      order_by: fragment("toStartOfMonth(toTimeZone(?, ?))", e.timestamp, ^site.timezone),
+      group_by: fragment("toStartOfMonth(toTimeZone(?, ?))", e.timestamp, @timezone),
+      order_by: fragment("toStartOfMonth(toTimeZone(?, ?))", e.timestamp, @timezone),
       select_merge: %{
-        date: fragment("toStartOfMonth(toTimeZone(?, ?))", e.timestamp, ^site.timezone)
+        date: fragment("toStartOfMonth(toTimeZone(?, ?))", e.timestamp, @timezone)
       }
     )
   end
 
-  def select_bucket(q, site, %Query{interval: "date"}) do
+  def select_bucket(q, _site, %Query{interval: "date"}) do
     from(
       e in q,
-      group_by: fragment("toDate(toTimeZone(?, ?))", e.timestamp, ^site.timezone),
-      order_by: fragment("toDate(toTimeZone(?, ?))", e.timestamp, ^site.timezone),
+      group_by: fragment("toDate(toTimeZone(?, ?))", e.timestamp, @timezone),
+      order_by: fragment("toDate(toTimeZone(?, ?))", e.timestamp, @timezone),
       select_merge: %{
-        date: fragment("toDate(toTimeZone(?, ?))", e.timestamp, ^site.timezone)
+        date: fragment("toDate(toTimeZone(?, ?))", e.timestamp, @timezone)
       }
     )
   end
 
-  def select_bucket(q, site, %Query{interval: "hour"}) do
+  def select_bucket(q, _site, %Query{interval: "hour"}) do
     from(
       e in q,
-      group_by: fragment("toStartOfHour(toTimeZone(?, ?))", e.timestamp, ^site.timezone),
-      order_by: fragment("toStartOfHour(toTimeZone(?, ?))", e.timestamp, ^site.timezone),
+      group_by: fragment("toStartOfHour(toTimeZone(?, ?))", e.timestamp, @timezone),
+      order_by: fragment("toStartOfHour(toTimeZone(?, ?))", e.timestamp, @timezone),
       select_merge: %{
-        date: fragment("toStartOfHour(toTimeZone(?, ?))", e.timestamp, ^site.timezone)
+        date: fragment("toStartOfHour(toTimeZone(?, ?))", e.timestamp, @timezone)
       }
     )
   end

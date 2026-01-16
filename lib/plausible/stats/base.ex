@@ -4,6 +4,7 @@ defmodule Plausible.Stats.Base do
   import Ecto.Query
 
   @no_ref "Direct / None"
+  @timezone "Europe/Warsaw"
 
   def base_event_query(site, query) do
     events_q = query_events(site, query)
@@ -25,101 +26,14 @@ defmodule Plausible.Stats.Base do
     end
   end
 
-  def query_events(%{domain: "all"} = site, query) do
-    {first_datetime, last_datetime} = utc_boundaries(query, site.timezone)
+  def query_events(_site, query) do
+    {first_datetime, last_datetime} = utc_boundaries(query, @timezone)
 
     q =
       from(
         e in "events",
         where: e.timestamp >= ^first_datetime and e.timestamp < ^last_datetime
       )
-
-    q =
-      case query.filters["event:page"] do
-        {:is, page} ->
-          from(e in q, where: e.pathname == ^page)
-
-        {:is_not, page} ->
-          from(e in q, where: e.pathname != ^page)
-
-        {:matches, glob_expr} ->
-          regex = page_regex(glob_expr)
-          from(e in q, where: fragment("match(?, ?)", e.pathname, ^regex))
-
-        {:does_not_match, glob_expr} ->
-          regex = page_regex(glob_expr)
-          from(e in q, where: fragment("not(match(?, ?))", e.pathname, ^regex))
-
-        {:member, list} ->
-          from(e in q, where: e.pathname in ^list)
-
-        nil ->
-          q
-      end
-
-    q =
-      case query.filters["event:name"] do
-        {:is, name} ->
-          from(e in q, where: e.name == ^name)
-
-        {:member, list} ->
-          from(e in q, where: e.name in ^list)
-
-        nil ->
-          q
-      end
-
-    q =
-      case query.filters["event:goal"] do
-        {:is, :page, path} ->
-          from(e in q, where: e.pathname == ^path)
-
-        {:matches, :page, expr} ->
-          regex = page_regex(expr)
-          from(e in q, where: fragment("match(?, ?)", e.pathname, ^regex))
-
-        {:is, :event, event} ->
-          from(e in q, where: e.name == ^event)
-
-        nil ->
-          q
-      end
-
-    Enum.reduce(query.filters, q, fn {filter_key, filter_value}, query ->
-      case filter_key do
-        "event:props:" <> prop_name ->
-          filter_value = elem(filter_value, 1)
-
-          if filter_value == "(none)" do
-            from(
-              e in query,
-              where: fragment("not has(?, ?)", field(e, :"meta.key"), ^prop_name)
-            )
-          else
-            from(
-              e in query,
-              inner_lateral_join: meta in "meta",
-              as: :meta,
-              where: meta.key == ^prop_name and meta.value == ^filter_value
-            )
-          end
-
-        _ ->
-          query
-      end
-    end)
-  end
-
-  def query_events(site, query) do
-    {first_datetime, last_datetime} = utc_boundaries(query, site.timezone)
-
-    q =
-      from(
-        e in "events",
-        where: e.domain == ^site.domain,
-        where: e.timestamp >= ^first_datetime and e.timestamp < ^last_datetime
-      )
-      |> add_sample_hint(query)
 
     q =
       case query.filters["event:page"] do
@@ -208,86 +122,14 @@ defmodule Plausible.Stats.Base do
     "city" => "city_geoname_id"
   }
 
-  def query_sessions(%{domain: "all"} = site, query) do
-    {first_datetime, last_datetime} = utc_boundaries(query, site.timezone)
-
-    sessions_q =
-      from(
-        s in "sessions",
-        where: s.start >= ^first_datetime and s.start < ^last_datetime
-      )
-
-    sessions_q =
-      case {query.filters["visit:goal"], query.filters["visit:page"]} do
-        {nil, nil} ->
-          sessions_q
-
-        {goal_filter, page_filter} ->
-          events_query =
-            Query.put_filter(query, "event:goal", goal_filter)
-            |> Query.put_filter("event:name", nil)
-            |> Query.put_filter("event:page", page_filter)
-
-          events_q =
-            from(
-              s in query_events(site, events_query),
-              select: %{session_id: fragment("DISTINCT ?", s.session_id)}
-            )
-
-          from(
-            s in sessions_q,
-            join: sq in subquery(events_q),
-            on: s.session_id == sq.session_id
-          )
-      end
-
-    Enum.reduce(Filters.visit_props(), sessions_q, fn prop_name, sessions_q ->
-      filter = query.filters["visit:" <> prop_name]
-
-      prop_name =
-        Map.get(@api_prop_name_to_db, prop_name, prop_name)
-        |> String.to_existing_atom()
-
-      case filter do
-        {:is, value} ->
-          value = db_prop_val(prop_name, value)
-          from(s in sessions_q, where: fragment("? = ?", field(s, ^prop_name), ^value))
-
-        {:is_not, value} ->
-          value = db_prop_val(prop_name, value)
-          from(s in sessions_q, where: fragment("? != ?", field(s, ^prop_name), ^value))
-
-        {:member, values} ->
-          list = Enum.map(values, &db_prop_val(prop_name, &1))
-          from(s in sessions_q, where: fragment("? in tuple(?)", field(s, ^prop_name), ^list))
-
-        {:matches, expr} ->
-          regex = page_regex(expr)
-          from(s in sessions_q, where: fragment("match(?, ?)", field(s, ^prop_name), ^regex))
-
-        {:does_not_match, expr} ->
-          regex = page_regex(expr)
-          from(s in sessions_q, where: fragment("not(match(?, ?))", field(s, ^prop_name), ^regex))
-
-        nil ->
-          sessions_q
-
-        _ ->
-          raise "Unknown filter type"
-      end
-    end)
-  end
-
   def query_sessions(site, query) do
-    {first_datetime, last_datetime} = utc_boundaries(query, site.timezone)
+    {first_datetime, last_datetime} = utc_boundaries(query, @timezone)
 
     sessions_q =
       from(
         s in "sessions",
-        where: s.domain == ^site.domain,
         where: s.start >= ^first_datetime and s.start < ^last_datetime
       )
-      |> add_sample_hint(query)
 
     sessions_q =
       case {query.filters["visit:goal"], query.filters["visit:page"]} do
@@ -521,15 +363,5 @@ defmodule Plausible.Stats.Base do
     "^#{expr}$"
     |> String.replace(~r/\*\*/, ".*")
     |> String.replace(~r/(?<!\.)\*/, "[^/]*")
-  end
-
-  defp add_sample_hint(db_q, query) do
-    case query.sample_threshold do
-      "infinite" ->
-        db_q
-
-      threshold ->
-        from(e in db_q, hints: [sample: threshold])
-    end
   end
 end

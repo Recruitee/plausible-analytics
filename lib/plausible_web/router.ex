@@ -7,7 +7,6 @@ defmodule PlausibleWeb.Router do
     plug :fetch_flash
     plug :put_secure_browser_headers
     plug :protect_from_forgery
-    plug PlausibleWeb.AuthPlug
   end
 
   pipeline :api do
@@ -18,7 +17,6 @@ defmodule PlausibleWeb.Router do
   pipeline :internal_stats_api do
     plug :accepts, ["json"]
     plug :fetch_session
-    plug PlausibleWeb.AuthorizeSiteAccess
   end
 
   scope "/api/stats", PlausibleWeb.Api do
@@ -44,8 +42,6 @@ defmodule PlausibleWeb.Router do
     get "/:domain/operating-systems", StatsController, :operating_systems
     get "/:domain/operating-system-versions", StatsController, :operating_system_versions
     get "/:domain/screen-sizes", StatsController, :screen_sizes
-    get "/:domain/conversions", StatsController, :conversions
-    get "/:domain/property/:prop_name", StatsController, :prop_breakdown
     get "/:domain/suggestions/:filter_name", StatsController, :filter_suggestions
   end
 
@@ -58,7 +54,6 @@ defmodule PlausibleWeb.Router do
   scope "/", PlausibleWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
-    get "/:domain/*path", StatsController, :stats
+    get "/", StatsController, :index
   end
 end

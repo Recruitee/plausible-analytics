@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import {BrowserRouter, Switch, Route, useLocation} from "react-router-dom";
+import { BrowserRouter, Switch, Route, useLocation } from "react-router-dom";
 
 import Dash from './index'
 import SourcesModal from './stats/modals/sources'
@@ -23,41 +23,41 @@ function ScrollToTop() {
   return null;
 }
 
-export default function Router({site, loggedIn, currentUserRole}) {
+export default function Router({ site, loggedIn, currentUserRole }) {
   return (
     <BrowserRouter>
-      <Route path="/:domain">
+      <Route path={["/", "/:domain"]}>
         <ScrollToTop />
         <Dash site={site} loggedIn={loggedIn} currentUserRole={currentUserRole} />
         <Switch>
-          <Route exact path={["/:domain/sources", "/:domain/utm_mediums", "/:domain/utm_sources", "/:domain/utm_campaigns", "/:domain/utm_contents", "/:domain/utm_terms" ]}>
+          <Route exact path={["/sources", "/utm_mediums", "/utm_sources", "/utm_campaigns", "/utm_contents", "/utm_terms", "/:domain/sources", "/:domain/utm_mediums", "/:domain/utm_sources", "/:domain/utm_campaigns", "/:domain/utm_contents", "/:domain/utm_terms"]}>
             <SourcesModal site={site} />
           </Route>
-          <Route exact path="/:domain/referrers/Google">
+          <Route exact path={["/referrers/Google", "/:domain/referrers/Google"]}>
             <GoogleKeywordsModal site={site} />
           </Route>
-          <Route exact path="/:domain/referrers/:referrer">
+          <Route exact path={["/referrers/:referrer", "/:domain/referrers/:referrer"]}>
             <ReferrersDrilldownModal site={site} />
           </Route>
-          <Route path="/:domain/pages">
+          <Route path={["/pages", "/:domain/pages"]}>
             <PagesModal site={site} />
           </Route>
-          <Route path="/:domain/entry-pages">
+          <Route path={["/entry-pages", "/:domain/entry-pages"]}>
             <EntryPagesModal site={site} />
           </Route>
-          <Route path="/:domain/exit-pages">
+          <Route path={["/exit-pages", "/:domain/exit-pages"]}>
             <ExitPagesModal site={site} />
           </Route>
-          <Route path="/:domain/countries">
-            <ModalTable title="Top countries" site={site} endpoint={`/api/stats/${encodeURIComponent(site.domain)}/countries`} filter={{country: 'code', country_name: 'name'}} keyLabel="Country" renderIcon={renderCountryIcon} />
+          <Route path={["/countries", "/:domain/countries"]}>
+            <ModalTable title="Top countries" site={site} endpoint={`/api/stats/${encodeURIComponent(site.domain)}/countries`} filter={{ country: 'code', country_name: 'name' }} keyLabel="Country" renderIcon={renderCountryIcon} />
           </Route>
-          <Route path="/:domain/regions">
-            <ModalTable title="Top regions" site={site} endpoint={`/api/stats/${encodeURIComponent(site.domain)}/regions`} filter={{region: 'code', region_name: 'name'}} keyLabel="Region" renderIcon={renderRegionIcon} />
+          <Route path={["/regions", "/:domain/regions"]}>
+            <ModalTable title="Top regions" site={site} endpoint={`/api/stats/${encodeURIComponent(site.domain)}/regions`} filter={{ region: 'code', region_name: 'name' }} keyLabel="Region" renderIcon={renderRegionIcon} />
           </Route>
-          <Route path="/:domain/cities">
-            <ModalTable title="Top cities" site={site} endpoint={`/api/stats/${encodeURIComponent(site.domain)}/cities`} filter={{city: 'code', city_name: 'name'}} keyLabel="City" renderIcon={renderCityIcon} />
+          <Route path={["/cities", "/:domain/cities"]}>
+            <ModalTable title="Top cities" site={site} endpoint={`/api/stats/${encodeURIComponent(site.domain)}/cities`} filter={{ city: 'code', city_name: 'name' }} keyLabel="City" renderIcon={renderCityIcon} />
           </Route>
-          <Route path={["/:domain/filter/:field"]}>
+          <Route path={["/filter/:field", "/:domain/filter/:field"]}>
             <FilterModal site={site} />
           </Route>
         </Switch>

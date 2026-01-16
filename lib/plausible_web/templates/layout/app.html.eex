@@ -9,9 +9,9 @@
     <link rel="apple-touch-icon" href="/images/icon/apple-touch-icon.png">
     <title><%= assigns[:title] || "Plausible · Simple, privacy-friendly alternative to Google Analytics" %></title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
-    <script type="text/javascript" data-pref="<%= @conn.assigns[:theme] || (@conn.assigns[:current_user] && @conn.assigns[:current_user].theme) %>" src="<%= Routes.static_path(@conn, "/js/applyTheme.js") %>"></script>
+    <script type="text/javascript" data-pref="system" src="<%= Routes.static_path(@conn, "/js/applyTheme.js") %>"></script>
   </head>
-  <body class="flex flex-col bg-gray-50 dark:bg-gray-850" style="<%= if !@conn.assigns[:embedded], do: "height: 100%;" %> <%= if @conn.assigns[:background], do: "background-color: #{@conn.assigns[:background]}" %>">
+  <body class="flex flex-col bg-gray-50 dark:bg-gray-850" style="height: 100%;">
     <%= render("_header.html", assigns) %>
 
     <main class="flex-1">

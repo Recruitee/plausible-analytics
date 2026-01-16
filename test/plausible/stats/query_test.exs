@@ -2,7 +2,7 @@ defmodule Plausible.Stats.QueryTest do
   use ExUnit.Case, async: true
   alias Plausible.Stats.Query
 
-  @site %Plausible.Site{timezone: "UTC"}
+  @site %{timezone: "UTC"}
 
   test "parses day format" do
     q = Query.from(@site, %{"period" => "day", "date" => "2019-01-01"})
