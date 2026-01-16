@@ -2,40 +2,6 @@ defmodule Plausible.TestUtils do
   use Plausible.Repo
   alias Plausible.Factory
 
-  def create_user(_) do
-    {:ok, user: Factory.insert(:user)}
-  end
-
-  def create_site(%{user: user}) do
-    site = Factory.insert(:site, domain: "test-site.com", members: [user])
-    {:ok, site: site}
-  end
-
-  def add_imported_data(%{site: site}) do
-    site =
-      site
-      |> Plausible.Site.start_import("Google Analytics", "ok")
-      |> Repo.update!()
-
-    {:ok, site: site}
-  end
-
-  def create_new_site(%{user: user}) do
-    site = Factory.insert(:site, members: [user])
-    {:ok, site: site}
-  end
-
-  def create_api_key(%{user: user}) do
-    api_key = Factory.insert(:api_key, user: user)
-
-    {:ok, api_key: api_key.key}
-  end
-
-  def use_api_key(%{conn: conn, api_key: api_key}) do
-    conn = Plug.Conn.put_req_header(conn, "authorization", "Bearer #{api_key}")
-
-    {:ok, conn: conn}
-  end
 
   def create_pageviews(pageviews) do
     pageviews =
@@ -64,30 +30,6 @@ defmodule Plausible.TestUtils do
     Plausible.ClickhouseRepo.insert_all("sessions", sessions)
   end
 
-  def log_in(%{user: user, conn: conn}) do
-    conn =
-      init_session(conn)
-      |> Plug.Conn.put_session(:current_user_id, user.id)
-
-    {:ok, conn: conn}
-  end
-
-  def init_session(conn) do
-    opts =
-      Plug.Session.init(
-        store: :cookie,
-        key: "foobar",
-        encryption_salt: "encrypted cookie salt",
-        signing_salt: "signing salt",
-        log: false,
-        encrypt: false
-      )
-
-    conn
-    |> Plug.Session.call(opts)
-    |> Plug.Conn.fetch_session()
-  end
-
   def populate_stats(site, events) do
     Enum.map(events, fn event ->
       case event do
@@ -102,7 +44,7 @@ defmodule Plausible.TestUtils do
   end
 
   def populate_stats(events) do
-    {native, imported} =
+    {native, _imported} =
       Enum.split_with(events, fn event ->
         case event do
           %Plausible.ClickhouseEvent{} ->
@@ -114,7 +56,6 @@ defmodule Plausible.TestUtils do
       end)
 
     if native, do: populate_native_stats(native)
-    if imported, do: populate_imported_stats(imported)
   end
 
   defp populate_native_stats(events) do
@@ -137,11 +78,6 @@ defmodule Plausible.TestUtils do
       Plausible.ClickhouseSession,
       Enum.map(Map.values(sessions), &schema_to_map/1)
     )
-  end
-
-  defp populate_imported_stats(events) do
-    Enum.group_by(events, &Map.fetch!(&1, :table), &Map.delete(&1, :table))
-    |> Enum.map(fn {table, events} -> Plausible.ClickhouseRepo.insert_all(table, events) end)
   end
 
   def relative_time(shifts) do

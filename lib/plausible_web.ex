@@ -4,7 +4,6 @@ defmodule PlausibleWeb do
       use Phoenix.Controller, namespace: PlausibleWeb
 
       import Plug.Conn
-      import PlausibleWeb.ControllerHelpers
       alias PlausibleWeb.Router.Helpers, as: Routes
     end
   end

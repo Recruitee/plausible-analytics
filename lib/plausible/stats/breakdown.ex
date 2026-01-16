@@ -8,102 +8,11 @@ defmodule Plausible.Stats.Breakdown do
   @session_metrics [:visits, :bounce_rate, :visit_duration]
   @event_props ["event:page", "event:page_match", "event:name"]
 
-  def breakdown(site, query, "event:goal", metrics, pagination) do
-    {event_goals, pageview_goals} = {[], []}
-
-    events = Enum.map(event_goals, & &1.event_name)
-    event_query = %Query{query | filters: Map.put(query.filters, "event:name", {:member, events})}
-
-    event_results =
-      if Enum.any?(event_goals) do
-        breakdown(site, event_query, "event:name", metrics, pagination)
-        |> transform_keys(%{name: :goal})
-      else
-        []
-      end
-
-    {limit, page} = pagination
-    offset = (page - 1) * limit
-
-    page_results =
-      if Enum.any?(pageview_goals) do
-        page_exprs = Enum.map(pageview_goals, & &1.page_path)
-        page_regexes = Enum.map(page_exprs, &page_regex/1)
-
-        from(e in base_event_query(site, query),
-          order_by: [desc: fragment("uniq(?)", e.user_id)],
-          limit: ^limit,
-          offset: ^offset,
-          where:
-            fragment(
-              "notEmpty(multiMatchAllIndices(?, array(?)) as indices)",
-              e.pathname,
-              ^page_regexes
-            ),
-          group_by: fragment("index"),
-          select: %{
-            index: fragment("arrayJoin(indices) as index"),
-            goal: fragment("concat('Visit ', array(?)[index])", ^page_exprs)
-          }
-        )
-        |> select_event_metrics(metrics)
-        |> ClickhouseRepo.all()
-        |> Enum.map(fn row -> Map.delete(row, :index) end)
-      else
-        []
-      end
-
-    zip_results(event_results, page_results, :goal, metrics)
-  end
-
-  def breakdown(site, query, "event:props:" <> custom_prop, metrics, pagination) do
-    {limit, _} = pagination
-
-    none_result =
-      if !Enum.any?(query.filters, fn {key, _} -> String.starts_with?(key, "event:props") end) do
-        none_filters = Map.put(query.filters, "event:props:" <> custom_prop, {:is, "(none)"})
-        none_query = %Query{query | filters: none_filters}
-
-        from(e in base_event_query(site, none_query),
-          order_by: [desc: fragment("uniq(?)", e.user_id)],
-          select: %{},
-          select_merge: %{^custom_prop => "(none)"},
-          having: fragment("uniq(?)", e.user_id) > 0
-        )
-        |> select_event_metrics(metrics)
-        |> ClickhouseRepo.all()
-      else
-        []
-      end
-
-    results = breakdown_events(site, query, "event:props:" <> custom_prop, metrics, pagination)
-
-    zipped = zip_results(none_result, results, custom_prop, metrics)
-
-    if Enum.find_index(zipped, fn value -> value[custom_prop] == "(none)" end) == limit do
-      Enum.slice(zipped, 0..(limit - 1))
-    else
-      zipped
-    end
-  end
-
   def breakdown(site, query, "event:page", metrics, pagination) do
     event_metrics = Enum.filter(metrics, &(&1 in @event_metrics))
     session_metrics = Enum.filter(metrics, &(&1 in @session_metrics))
 
     event_result = breakdown_events(site, query, "event:page", event_metrics, pagination)
-
-    event_result =
-      if :time_on_page in metrics do
-        pages = Enum.map(event_result, & &1[:page])
-        time_on_page_result = breakdown_time_on_page(site, query, pages)
-
-        Enum.map(event_result, fn row ->
-          Map.put(row, :time_on_page, time_on_page_result[row[:page]])
-        end)
-      else
-        event_result
-      end
 
     new_query =
       case event_result do
@@ -217,54 +126,6 @@ defmodule Plausible.Stats.Breakdown do
     |> apply_pagination(pagination)
     |> ClickhouseRepo.all()
     |> transform_keys(%{operating_system: :os})
-  end
-
-  defp breakdown_time_on_page(_site, _query, []) do
-    []
-  end
-
-  defp breakdown_time_on_page(site, query, pages) do
-    q =
-      from(
-        e in base_event_query(site, %Query{
-          query
-          | filters: Map.delete(query.filters, "event:page")
-        }),
-        select: {
-          fragment("? as p", e.pathname),
-          fragment("? as t", e.timestamp),
-          fragment("? as s", e.session_id)
-        },
-        order_by: [e.session_id, e.timestamp]
-      )
-
-    {base_query_raw, base_query_raw_params} = ClickhouseRepo.to_sql(:all, q)
-
-    select = "round(sum(td)/count(case when p2 != p then 1 end))"
-
-    time_query = "
-      SELECT
-        p,
-        #{select}
-      FROM
-        (SELECT
-          p,
-          p2,
-          sum(t2-t) as td
-        FROM
-          (SELECT
-            *,
-            neighbor(t, 1) as t2,
-            neighbor(p, 1) as p2,
-            neighbor(s, 1) as s2
-          FROM (#{base_query_raw}))
-        WHERE s=s2 AND p IN tuple(?)
-        GROUP BY p,p2,s)
-      GROUP BY p"
-
-    {:ok, res} = ClickhouseRepo.query(time_query, base_query_raw_params ++ [pages])
-
-    res.rows |> Enum.map(fn [page, time] -> {page, time} end) |> Enum.into(%{})
   end
 
   defp do_group_by(

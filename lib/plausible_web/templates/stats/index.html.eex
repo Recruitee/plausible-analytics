@@ -1,0 +1,7 @@
+<div class="container" data-site-domain="all">
+  <div class="pt-6"></div>
+  <div id="stats-react-container" style="overflow-anchor: none;" data-domain="all" data-offset="3600" data-has-goals=false data-logged-in=true data-selfhosted=true data-current-user-role="owner"></div>
+  <div id="modal_root"></div>
+
+  <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/dashboard.js") %>"></script>
+</div>
