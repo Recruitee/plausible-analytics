@@ -77,11 +77,9 @@ defmodule Plausible.MixProject do
       {:csv, "~> 2.3"},
       {:siphash, "~> 3.2"},
       {:oban, "~> 2.12.0"},
-      {:geolix, "~> 1.0"},
       {:locus, "~> 2.3.10"},
       {:clickhouse_ecto, git: "https://github.com/Recruitee/clickhouse_ecto.git", ref: "ed45cd0"},
       {:location, git: "https://github.com/plausible/location.git"},
-      {:geolix_adapter_mmdb2, "~> 0.5.0"},
       {:cachex, "~> 3.4"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
@@ -97,6 +95,7 @@ defmodule Plausible.MixProject do
       {:opentelemetry_oban, "~> 1.0"},
       {:opentelemetry_phoenix, "~> 1.1"},
       {:floki, "~> 0.32.0", only: :test},
+      {:mox, "~> 1.0", only: :test},
       {:referrer_blocklist,
        git: "https://github.com/plausible/referrer-blocklist.git", ref: "d6f52c2"}
     ]

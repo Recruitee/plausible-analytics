@@ -47,8 +47,6 @@ ch_db_url =
     "http://plausible_events_db:8123/plausible_events_db"
   )
 
-
-
 ### Mandatory params End
 
 sentry_dsn = get_var_from_path_or_env(config_dir, "SENTRY_DSN")
@@ -98,15 +96,13 @@ config :plausible, Plausible.ClickhouseRepo,
   loggers: [Ecto.LogEntry],
   queue_target: 500,
   queue_interval: 2000,
-  url: ch_db_url,
-  flush_interval_ms: 5000,
-  max_buffer_size: 10000
+  url: ch_db_url
 
 cond do
   config_env() == :prod ->
     base_cron = [
       # Daily at midnight
-      {"0 0 * * *", Plausible.Workers.RotateSalts}
+      {"0 0 * * *", Plausible.Tracking.Workers.RotateSalts}
     ]
 
     base_queues = [
@@ -136,21 +132,15 @@ config :plausible, :user_agent_cache,
   limit: user_agent_cache_limit,
   stats: user_agent_cache_stats
 
-if config_env() != :test do
-  config :geolix,
-    databases: [
-      %{
-        id: :geolocation,
-        adapter: Geolix.Adapter.MMDB2,
-        source: ip_geolocation_db,
-        result_as: :raw
-      }
-    ]
-end
-
 if geonames_source_file do
   config :location, :geonames_source_file, geonames_source_file
 end
+
+config :ua_inspector,
+  database_path: Application.app_dir(:plausible, "priv/ua_inspector")
+
+config :ref_inspector,
+  database_path: Application.app_dir(:plausible, "priv/ref_inspector")
 
 config :logger,
   level: :info,

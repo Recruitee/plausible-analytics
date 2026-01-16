@@ -22,6 +22,7 @@ defmodule PlausibleWeb.ConnCase do
       import Phoenix.ConnTest
       alias PlausibleWeb.Router.Helpers, as: Routes
       import Plausible.Factory
+      import Mox, except: [stub: 3]
 
       # The default endpoint for testing
       @endpoint PlausibleWeb.Endpoint
@@ -34,6 +35,9 @@ defmodule PlausibleWeb.ConnCase do
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Plausible.Repo, {:shared, self()})
     end
+
+    # Set up default geolocation stub
+    Mox.stub_with(Plausible.Geolocation.Mock, Plausible.Test.GeolocationStub)
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end

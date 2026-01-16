@@ -13,12 +13,6 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :ua_inspector,
-  database_path: "priv/ua_inspector"
-
-config :ref_inspector,
-  database_path: "priv/ref_inspector"
-
 config :plausible,
   # 30 minutes
   session_timeout: 1000 * 60 * 30,
@@ -34,5 +28,9 @@ config :plausible, Plausible.Repo,
 config :plausible, :user_agent_cache,
   limit: 1000,
   stats: false
+
+config :plausible, :ingestion,
+  buffer_size: 10_000,
+  flush_interval_ms: 5000
 
 import_config "#{config_env()}.exs"
