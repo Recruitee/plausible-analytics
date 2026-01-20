@@ -18,12 +18,14 @@ defmodule Plausible.Application do
       ReferrerBlocklist,
       {Oban, Application.get_env(:plausible, Oban)},
       {Cachex,
-       Keyword.merge(Application.get_env(:plausible, :user_agent_cache), name: :user_agents)}
+       Keyword.merge(Application.get_env(:plausible, :user_agent_cache), name: :user_agents)},
+      Plausible.Telemetry
     ]
 
     opts = [strategy: :one_for_one, name: Plausible.Supervisor]
     setup_opentelemetry()
     setup_sentry()
+    setup_buffer_telemetry()
     setup_cache_stats()
     Location.load_all()
     Application.put_env(:plausible, :server_start, Timex.now())
@@ -59,6 +61,10 @@ defmodule Plausible.Application do
     OpentelemetryEcto.setup([:plausible, :repo])
     OpentelemetryEcto.setup([:plausible, :clickhouse_repo])
     OpentelemetryOban.setup()
+  end
+
+  defp setup_buffer_telemetry do
+    Plausible.Tracking.BufferTelemetry.setup()
   end
 
   def report_cache_stats() do

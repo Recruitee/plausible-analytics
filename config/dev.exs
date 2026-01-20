@@ -32,3 +32,6 @@ config :plausible, PlausibleWeb.Endpoint,
 config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
+
+# Uncomment to enable console telemetry reporter for debugging
+# config :plausible, telemetry_console_reporter: true
