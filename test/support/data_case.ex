@@ -21,6 +21,7 @@ defmodule Plausible.DataCase do
       import Ecto.Changeset
       import Plausible.DataCase
       import Plausible.Factory
+      import Mox, except: [stub: 3]
     end
   end
 
@@ -30,6 +31,9 @@ defmodule Plausible.DataCase do
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Plausible.Repo, {:shared, self()})
     end
+
+    # Set up default geolocation stub
+    Mox.stub_with(Plausible.Geolocation.Mock, Plausible.Test.GeolocationStub)
 
     :ok
   end

@@ -22,7 +22,7 @@ defmodule Plausible.Session.WriteBuffer do
   def handle_cast({:insert, sessions}, %{buffer: buffer} = state) do
     new_buffer = sessions ++ buffer
 
-    if length(new_buffer) >= max_buffer_size() do
+    if length(new_buffer) >= buffer_size() do
       Logger.info("Buffer full, flushing to disk")
       Process.cancel_timer(state[:timer])
       flush(new_buffer)
@@ -58,15 +58,15 @@ defmodule Plausible.Session.WriteBuffer do
           |> Enum.map(&(Map.from_struct(&1) |> Map.delete(:__meta__)))
           |> Enum.reverse()
 
-        Plausible.ClickhouseRepo.insert_all(Plausible.ClickhouseSession, sessions)
+        Plausible.ClickhouseRepo.insert_all(Plausible.Session, sessions)
     end
   end
 
   defp flush_interval_ms() do
-    Keyword.fetch!(Application.get_env(:plausible, Plausible.ClickhouseRepo), :flush_interval_ms)
+    Keyword.fetch!(Application.get_env(:plausible, :ingestion), :flush_interval_ms)
   end
 
-  defp max_buffer_size() do
-    Keyword.fetch!(Application.get_env(:plausible, Plausible.ClickhouseRepo), :max_buffer_size)
+  defp buffer_size() do
+    Keyword.fetch!(Application.get_env(:plausible, :ingestion), :buffer_size)
   end
 end

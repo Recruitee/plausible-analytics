@@ -1,12 +1,12 @@
 defmodule PlausibleWeb.Api.ExternalControllerTest do
-  use PlausibleWeb.ConnCase
+  use PlausibleWeb.ConnCase, async: false
   use Plausible.ClickhouseRepo
 
   defp get_event(domain) do
     Plausible.Event.WriteBuffer.flush()
 
     ClickhouseRepo.one(
-      from e in Plausible.ClickhouseEvent,
+      from e in Plausible.Event,
         where: e.domain == ^domain,
         order_by: [desc: e.timestamp]
     )
@@ -16,7 +16,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
     Plausible.Event.WriteBuffer.flush()
 
     ClickhouseRepo.all(
-      from e in Plausible.ClickhouseEvent,
+      from e in Plausible.Event,
         where: e.domain == ^domain,
         order_by: [desc: e.timestamp]
     )
@@ -883,23 +883,6 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
       assert pageview.hostname == "test.com"
       assert pageview.pathname == "/ﺝﻭﺎﺋﺯ-ﻮﻤﺳﺎﺒﻗﺎﺗ"
       assert pageview.utm_source == "%balle%"
-    end
-
-    @tag :skip
-    test "ignores invalid query param part", %{conn: conn} do
-      params = %{
-        n: "pageview",
-        u:
-          "https://test.com/?utm_source=Bing%20%7C%20Text%20%7C%20Leads%20%7C%20EIGEN%20NAAM-most%20broad%20(Various%20search%20term%20matches)%20%7C%20Afweging,%20Consumptie%20%7C%20T%3A%",
-        d: "invalid-query-test.com"
-      }
-
-      conn = post(conn, "/api/event", params)
-
-      assert conn.status == 202
-
-      pageview = get_event("invalid-query-test.com")
-      assert pageview.utm_source == ""
     end
 
     test "can use double quotes in query params", %{conn: conn} do

@@ -1,4 +1,4 @@
-defmodule Plausible.ClickhouseEvent do
+defmodule Plausible.Event do
   use Ecto.Schema
 
   import Ecto.Changeset

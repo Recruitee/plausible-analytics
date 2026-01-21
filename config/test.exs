@@ -12,18 +12,12 @@ config :plausible, Plausible.ClickhouseRepo,
   loggers: [Ecto.LogEntry],
   pool_size: 5
 
-config :geolix,
-  databases: [
-    %{
-      id: :geolocation,
-      adapter: Geolix.Adapter.Fake,
-      data: %{
-        {1, 1, 1, 1} => %{country: %{iso_code: "US"}},
-        {1, 1, 1, 1, 1, 1, 1, 1} => %{country: %{iso_code: "US"}},
-        {0, 0, 0, 0} => %{country: %{iso_code: "ZZ"}}
-      }
-    }
-  ]
-
 config :plausible,
-  session_timeout: 0
+  session_timeout: 0,
+  env: :test
+
+config :plausible, :ingestion,
+  buffer_size: 100,
+  flush_interval_ms: 2000
+
+config :plausible, :geolocation, Plausible.Geolocation.Mock

@@ -1,4 +1,4 @@
-defmodule Plausible.ClickhouseSession do
+defmodule Plausible.Session do
   use Ecto.Schema
 
   import Ecto.Changeset

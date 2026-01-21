@@ -4,7 +4,7 @@ defmodule Plausible.Factory do
   def ch_session_factory do
     hostname = sequence(:domain, &"example-#{&1}.com")
 
-    %Plausible.ClickhouseSession{
+    %Plausible.Session{
       sign: 1,
       session_id: SipHash.hash!(hash_key(), UUID.uuid4()),
       user_id: SipHash.hash!(hash_key(), UUID.uuid4()),
@@ -45,12 +45,12 @@ defmodule Plausible.Factory do
   def event_factory do
     hostname = sequence(:domain, &"example-#{&1}.com")
 
-    %Plausible.ClickhouseEvent{
+    %Plausible.Event{
       hostname: hostname,
       domain: hostname,
       pathname: "/",
       timestamp: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      event_id: Plausible.ClickhouseEvent.random_event_id(),
+      event_id: Plausible.Event.random_event_id(),
       user_id: SipHash.hash!(hash_key(), UUID.uuid4()),
       session_id: SipHash.hash!(hash_key(), UUID.uuid4()),
       referrer: "",

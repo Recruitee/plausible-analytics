@@ -1,4 +1,4 @@
-defmodule Plausible.Workers.RotateSalts do
+defmodule Plausible.Tracking.Workers.RotateSalts do
   use Plausible.Repo
   use Oban.Worker, queue: :rotate_salts
 
