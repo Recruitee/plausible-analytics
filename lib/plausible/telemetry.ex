@@ -60,7 +60,7 @@ defmodule Plausible.Telemetry do
       # ============================================================
 
       # Total number of items inserted (counter)
-      counter("event.insert.count",
+      counter("careers_analytics.event.insert.count",
         event_name: [:plausible, :ingest, :buffer, :event, :insert],
         measurement: :count,
         description: "Total number of events inserted into buffer",
@@ -68,7 +68,7 @@ defmodule Plausible.Telemetry do
         tag_values: fn _meta -> %{buffer_type: "event"} end
       ),
 
-      counter("session.insert.count",
+      counter("careers_analytics.session.insert.count",
         event_name: [:plausible, :ingest, :buffer, :session, :insert],
         measurement: :count,
         description: "Total number of sessions inserted into buffer",
@@ -77,7 +77,7 @@ defmodule Plausible.Telemetry do
       ),
 
       # Current buffer size after insert (gauge)
-      last_value("event.buffer_size",
+      last_value("careers_analytics.event.buffer_size",
         event_name: [:plausible, :ingest, :buffer, :event, :insert],
         measurement: :buffer_size,
         description: "Current event buffer size",
@@ -85,7 +85,7 @@ defmodule Plausible.Telemetry do
         tag_values: fn _meta -> %{buffer_type: "event"} end
       ),
 
-      last_value("session.buffer_size",
+      last_value("careers_analytics.session.buffer_size",
         event_name: [:plausible, :ingest, :buffer, :session, :insert],
         measurement: :buffer_size,
         description: "Current session buffer size",
@@ -98,7 +98,7 @@ defmodule Plausible.Telemetry do
       # ============================================================
 
       # Total number of flushes by trigger type (counter)
-      counter("event.flush.total",
+      counter("careers_analytics.event.flush.total",
         event_name: [:plausible, :ingest, :buffer, :event, :flush],
         measurement: fn _measurements -> 1 end,
         description: "Total number of event buffer flushes",
@@ -106,7 +106,7 @@ defmodule Plausible.Telemetry do
         tag_values: fn meta -> %{buffer_type: "event", trigger: meta.trigger} end
       ),
 
-      counter("session.flush.total",
+      counter("careers_analytics.session.flush.total",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: fn _measurements -> 1 end,
         description: "Total number of session buffer flushes",
@@ -115,7 +115,7 @@ defmodule Plausible.Telemetry do
       ),
 
       # Flush size distribution (histogram)
-      distribution("event.flush.size",
+      distribution("careers_analytics.event.flush.size",
         event_name: [:plausible, :ingest, :buffer, :event, :flush],
         measurement: :count,
         description: "Distribution of event flush batch sizes",
@@ -124,7 +124,7 @@ defmodule Plausible.Telemetry do
         unit: :unit
       ),
 
-      distribution("session.flush.size",
+      distribution("careers_analytics.session.flush.size",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: :count,
         description: "Distribution of session flush batch sizes",
@@ -134,7 +134,7 @@ defmodule Plausible.Telemetry do
       ),
 
       # Flush duration distribution (histogram in milliseconds)
-      distribution("event.flush.duration_ms",
+      distribution("careers_analytics.event.flush.duration_ms",
         event_name: [:plausible, :ingest, :buffer, :event, :flush],
         measurement: :duration,
         description: "Event flush duration distribution",
@@ -146,7 +146,7 @@ defmodule Plausible.Telemetry do
         ]
       ),
 
-      distribution("session.flush.duration_ms",
+      distribution("careers_analytics.session.flush.duration_ms",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: :duration,
         description: "Session flush duration distribution",
@@ -159,7 +159,7 @@ defmodule Plausible.Telemetry do
       ),
 
       # Time between flushes distribution (histogram in milliseconds)
-      distribution("event.flush.interval_ms",
+      distribution("careers_analytics.event.flush.interval_ms",
         event_name: [:plausible, :ingest, :buffer, :event, :flush],
         measurement: :time_since_last_flush,
         description: "Time between event buffer flushes",
@@ -171,7 +171,7 @@ defmodule Plausible.Telemetry do
         ]
       ),
 
-      distribution("session.flush.interval_ms",
+      distribution("careers_analytics.session.flush.interval_ms",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: :time_since_last_flush,
         description: "Time between session buffer flushes",
@@ -184,7 +184,7 @@ defmodule Plausible.Telemetry do
       ),
 
       # Buffer utilization percentage (gauge - calculated in handler)
-      summary("event.utilization_percent",
+      summary("careers_analytics.event.utilization_percent",
         event_name: [:plausible, :ingest, :buffer, :event, :utilization],
         measurement: :utilization,
         description: "Event buffer utilization percentage",
@@ -193,7 +193,7 @@ defmodule Plausible.Telemetry do
         unit: :percent
       ),
 
-      summary("session.utilization_percent",
+      summary("careers_analytics.session.utilization_percent",
         event_name: [:plausible, :ingest, :buffer, :session, :utilization],
         measurement: :utilization,
         description: "Session buffer utilization percentage",
@@ -203,7 +203,7 @@ defmodule Plausible.Telemetry do
       ),
 
       # Empty flush counter (emitted by handler)
-      counter("event.empty_flushes",
+      counter("careers_analytics.event.empty_flushes",
         event_name: [:plausible, :ingest, :buffer, :event, :empty_flush],
         measurement: fn _measurements -> 1 end,
         description: "Number of empty event buffer flushes",
@@ -211,7 +211,7 @@ defmodule Plausible.Telemetry do
         tag_values: fn meta -> %{buffer_type: "event", trigger: meta.trigger} end
       ),
 
-      counter("session.empty_flushes",
+      counter("careers_analytics.session.empty_flushes",
         event_name: [:plausible, :ingest, :buffer, :session, :empty_flush],
         measurement: fn _measurements -> 1 end,
         description: "Number of empty session buffer flushes",
