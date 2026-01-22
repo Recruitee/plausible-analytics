@@ -1,5 +1,5 @@
 defmodule PlausibleWeb.ErrorHelpers do
-  use Phoenix.HTML
+  use PhoenixHTMLHelpers
 
   def error_tag(%Phoenix.HTML.Form{} = form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->

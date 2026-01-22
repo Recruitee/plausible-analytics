@@ -291,9 +291,29 @@ defmodule Plausible.Tracking.Actions.Event do
   def get_root_domain(nil), do: "(none)"
 
   def get_root_domain(hostname) do
-    case PublicSuffix.registrable_domain(hostname) do
+    case registrable_domain(hostname) do
       domain when is_binary(domain) -> domain
       _ -> hostname
+    end
+  end
+
+  defp registrable_domain(hostname) do
+    case PublicSufx.public_suffix(hostname) do
+      nil ->
+        nil
+
+      suffix ->
+        suffix_parts = String.split(suffix, ".")
+        suffix_length = length(suffix_parts)
+        hostname_parts = String.split(hostname, ".")
+
+        if length(hostname_parts) > suffix_length do
+          hostname_parts
+          |> Enum.take(-(suffix_length + 1))
+          |> Enum.join(".")
+        else
+          nil
+        end
     end
   end
 

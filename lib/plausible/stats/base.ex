@@ -100,6 +100,7 @@ defmodule Plausible.Stats.Base do
             from(
               e in query,
               inner_lateral_join: meta in "meta",
+              on: true,
               as: :meta,
               where: meta.key == ^prop_name and meta.value == ^filter_value
             )

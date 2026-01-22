@@ -4,8 +4,6 @@ import Config
 # you can enable the server option below.
 config :plausible, PlausibleWeb.Endpoint, server: false
 
-config :bcrypt_elixir, :log_rounds, 4
-
 config :plausible, Plausible.Repo, pool: Ecto.Adapters.SQL.Sandbox
 
 config :plausible, Plausible.ClickhouseRepo,
