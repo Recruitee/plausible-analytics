@@ -87,6 +87,8 @@ defmodule Plausible.MixProject do
       {:phoenix_pagination, "~> 0.7.0"},
       {:public_suffix, git: "https://github.com/axelson/publicsuffix-elixir"},
       {:telemetry, "~> 1.0", override: true},
+      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics_statsd, "~> 0.6"},
       {:opentelemetry_exporter, "~> 1.6"},
       {:open_telemetry_decorator, "~> 1.4.6"},
       {:opentelemetry, "~> 1.3"},

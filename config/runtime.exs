@@ -154,3 +154,23 @@ config :logger, Sentry.LoggerBackend,
 config :tzdata,
        :data_dir,
        get_var_from_path_or_env(config_dir, "STORAGE_DIR", Application.app_dir(:tzdata, "priv"))
+
+# OpenTelemetry configuration for Datadog
+config :opentelemetry, :resource,
+  service: %{
+    name: System.get_env("OTEL_SERVICE_NAME", "careers-analytics"),
+    version: System.get_env("DD_VERSION") || "unknown"
+  }
+
+# OpenTelemetry OTLP exporter configuration
+otlp_endpoint = System.get_env("OTLP_COLLECTOR_URL", "http://datadog-otlp-collector:4318")
+
+config :opentelemetry, :processors,
+  otel_batch_processor: %{
+    exporter:
+      {:opentelemetry_exporter,
+       %{
+         protocol: :grpc,
+         endpoints: [otlp_endpoint]
+       }}
+  }
