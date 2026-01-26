@@ -42,7 +42,7 @@ defmodule Plausible.ClickhouseRepo.Migrations.CreateEventsAndSessions do
       add(:domain, :string)
       add(:user_id, :UInt64)
       add(:hostname, :string)
-      add(:is_bounce, :boolean)
+      add(:is_bounce, :UInt8)
       add(:entry_page, :string)
       add(:exit_page, :string)
       add(:pageviews, :integer)
