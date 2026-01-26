@@ -151,6 +151,7 @@ defmodule Plausible.Stats.Breakdown do
     from(
       e in q,
       inner_lateral_join: meta in fragment("meta"),
+      on: true,
       where: meta.key == ^prop,
       group_by: meta.value,
       select_merge: %{^prop => meta.value}
