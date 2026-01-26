@@ -78,7 +78,7 @@ defmodule Plausible.MixProject do
       {:siphash, "~> 3.2"},
       {:oban, "~> 2.12.0"},
       {:locus, "~> 2.3.10"},
-      {:clickhouse_ecto, git: "https://github.com/Recruitee/clickhouse_ecto.git", ref: "ed45cd0"},
+      {:ecto_ch, "~> 0.8.0"},
       {:location, git: "https://github.com/plausible/location.git"},
       {:cachex, "~> 3.4"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},

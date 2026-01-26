@@ -1,7 +1,7 @@
 defmodule Plausible.ClickhouseRepo do
   use Ecto.Repo,
     otp_app: :plausible,
-    adapter: ClickhouseEcto
+    adapter: Ecto.Adapters.ClickHouse
 
   defmacro __using__(_) do
     quote do
@@ -12,8 +12,8 @@ defmodule Plausible.ClickhouseRepo do
   end
 
   def clear_stats_for(domain) do
-    events_sql = "ALTER TABLE events DELETE WHERE domain = ?"
-    sessions_sql = "ALTER TABLE sessions DELETE WHERE domain = ?"
+    events_sql = "ALTER TABLE events DELETE WHERE domain = {$0:String}"
+    sessions_sql = "ALTER TABLE sessions DELETE WHERE domain = {$0:String}"
     Ecto.Adapters.SQL.query!(__MODULE__, events_sql, [domain])
     Ecto.Adapters.SQL.query!(__MODULE__, sessions_sql, [domain])
   end

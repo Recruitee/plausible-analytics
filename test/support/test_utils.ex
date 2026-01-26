@@ -1,6 +1,5 @@
 defmodule Plausible.TestUtils do
   use Plausible.Repo
-  alias Plausible.Factory
 
   def get_buffer_size do
     Keyword.fetch!(Application.get_env(:plausible, :ingestion), :buffer_size)

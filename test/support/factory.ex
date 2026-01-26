@@ -23,7 +23,7 @@ defmodule Plausible.Factory do
       duration: 0,
       start: Timex.now(),
       timestamp: Timex.now(),
-      is_bounce: false,
+      is_bounce: 0,
       browser: "",
       browser_version: "",
       country_code: "",

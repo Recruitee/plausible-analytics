@@ -7,43 +7,39 @@ defmodule Plausible.Session do
 
   @primary_key false
   schema "sessions" do
-    field :hostname, :string
-    field :domain, :string
-    field :user_id, :integer
-    field :session_id, :integer
-    field :company_id, :integer
-    field :site_id, :integer
-
-    field :start, :naive_datetime
-    field :duration, :integer
-    field :is_bounce, :boolean
-    field :entry_page, :string
-    field :exit_page, :string
-    field :pageviews, :integer
-    field :events, :integer
-    field :sign, :integer
-
-    field :utm_medium, :string
-    field :utm_source, :string
-    field :utm_campaign, :string
-    field :utm_content, :string
-    field :utm_term, :string
-    field :referrer, :string
-    field :referrer_source, :string
-    field :campaign_id, :string
-    field :product_id, :string
-
-    field :country_code, :string, default: ""
-    field :subdivision1_code, :string, default: ""
-    field :subdivision2_code, :string, default: ""
-    field :city_geoname_id, :integer, default: 0
-
-    field :screen_size, :string
-    field :operating_system, :string
-    field :operating_system_version, :string
-    field :browser, :string
-    field :browser_version, :string
-    field :timestamp, :naive_datetime
+    field :company_id, Ch, type: "UInt64"
+    field :session_id, Ch, type: "UInt64"
+    field :sign, Ch, type: "Int8"
+    field :domain, Ch, type: "String"
+    field :user_id, Ch, type: "UInt64"
+    field :hostname, Ch, type: "String"
+    field :is_bounce, Ch, type: "UInt8"
+    field :entry_page, Ch, type: "String"
+    field :exit_page, Ch, type: "String"
+    field :pageviews, Ch, type: "Int32"
+    field :events, Ch, type: "Int32"
+    field :duration, Ch, type: "UInt32"
+    field :referrer, Ch, type: "String"
+    field :referrer_source, Ch, type: "String"
+    field :country_code, Ch, type: "LowCardinality(FixedString(2))", default: ""
+    field :screen_size, Ch, type: "LowCardinality(String)"
+    field :operating_system, Ch, type: "LowCardinality(String)"
+    field :browser, Ch, type: "LowCardinality(String)"
+    field :start, Ch, type: "DateTime"
+    field :timestamp, Ch, type: "DateTime"
+    field :utm_medium, Ch, type: "String"
+    field :utm_source, Ch, type: "String"
+    field :utm_campaign, Ch, type: "String"
+    field :browser_version, Ch, type: "LowCardinality(String)"
+    field :operating_system_version, Ch, type: "LowCardinality(String)"
+    field :subdivision1_code, Ch, type: "LowCardinality(String)", default: ""
+    field :subdivision2_code, Ch, type: "LowCardinality(String)", default: ""
+    field :city_geoname_id, Ch, type: "UInt32", default: 0
+    field :utm_content, Ch, type: "String"
+    field :utm_term, Ch, type: "String"
+    field :site_id, Ch, type: "UInt64"
+    field :campaign_id, Ch, type: "String"
+    field :product_id, Ch, type: "String"
   end
 
   def random_uint64() do

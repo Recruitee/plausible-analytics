@@ -7,44 +7,39 @@ defmodule Plausible.Event do
 
   @primary_key false
   schema "events" do
-    field :event_id, :integer
-    field :name, :string
-    field :domain, :string
-    field :hostname, :string
-    field :pathname, :string
-    field :user_id, :integer
-    field :session_id, :integer
-    field :company_id, :integer
-    field :site_id, :integer
-    field :page_id, :integer
-    field :job_id, :integer
-    field :timestamp, :naive_datetime
-
-    field :referrer, :string, default: ""
-    field :referrer_source, :string, default: ""
-    field :utm_medium, :string, default: ""
-    field :utm_source, :string, default: ""
-    field :utm_campaign, :string, default: ""
-    field :utm_content, :string, default: ""
-    field :utm_term, :string, default: ""
-    field :campaign_id, :string, default: ""
-    field :product_id, :string, default: ""
-
-    field :country_code, :string, default: ""
-    field :subdivision1_code, :string, default: ""
-    field :subdivision2_code, :string, default: ""
-    field :city_geoname_id, :integer, default: 0
-
-    field :screen_size, :string, default: ""
-    field :operating_system, :string, default: ""
-    field :operating_system_version, :string, default: ""
-    field :browser, :string, default: ""
-    field :browser_version, :string, default: ""
-
-    field :careers_application_form_uuid, :string, default: ""
-
-    field :"meta.key", {:array, :string}, default: []
-    field :"meta.value", {:array, :string}, default: []
+    field :company_id, Ch, type: "UInt64"
+    field :name, Ch, type: "String"
+    field :domain, Ch, type: "String"
+    field :user_id, Ch, type: "UInt64"
+    field :session_id, Ch, type: "UInt64"
+    field :hostname, Ch, type: "String"
+    field :pathname, Ch, type: "String"
+    field :referrer, Ch, type: "String", default: ""
+    field :referrer_source, Ch, type: "String", default: ""
+    field :country_code, Ch, type: "LowCardinality(FixedString(2))", default: ""
+    field :screen_size, Ch, type: "LowCardinality(String)", default: ""
+    field :operating_system, Ch, type: "LowCardinality(String)", default: ""
+    field :browser, Ch, type: "LowCardinality(String)", default: ""
+    field :timestamp, Ch, type: "DateTime"
+    field :utm_medium, Ch, type: "String", default: ""
+    field :utm_source, Ch, type: "String", default: ""
+    field :utm_campaign, Ch, type: "String", default: ""
+    field :"meta.key", Ch, type: "Array(String)", default: []
+    field :"meta.value", Ch, type: "Array(String)", default: []
+    field :browser_version, Ch, type: "LowCardinality(String)", default: ""
+    field :operating_system_version, Ch, type: "LowCardinality(String)", default: ""
+    field :subdivision1_code, Ch, type: "LowCardinality(String)", default: ""
+    field :subdivision2_code, Ch, type: "LowCardinality(String)", default: ""
+    field :city_geoname_id, Ch, type: "UInt32", default: 0
+    field :utm_content, Ch, type: "String", default: ""
+    field :utm_term, Ch, type: "String", default: ""
+    field :job_id, Ch, type: "UInt64"
+    field :page_id, Ch, type: "UInt64"
+    field :site_id, Ch, type: "UInt64"
+    field :event_id, Ch, type: "UInt64"
+    field :careers_application_form_uuid, Ch, type: "String", default: ""
+    field :campaign_id, Ch, type: "String", default: ""
+    field :product_id, Ch, type: "String", default: ""
   end
 
   def random_event_id() do
