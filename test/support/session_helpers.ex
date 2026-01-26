@@ -20,7 +20,7 @@ defmodule Plausible.Test.SessionHelpers do
       site_id: Enum.random(1..1_000_000),
       entry_page: "/",
       exit_page: "/",
-      is_bounce: false,
+      is_bounce: 0,
       pageviews: 1,
       events: 1,
       duration: 0,

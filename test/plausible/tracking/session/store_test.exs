@@ -39,7 +39,7 @@ defmodule Plausible.Session.StoreTest do
     assert session.user_id == event.user_id
     assert session.entry_page == event.pathname
     assert session.exit_page == event.pathname
-    assert session.is_bounce
+    assert session.is_bounce == 1
     assert session.duration == 0
     assert session.pageviews == 1
     assert session.events == 1
@@ -88,7 +88,7 @@ defmodule Plausible.Session.StoreTest do
 
     assert_receive({WriteBuffer, :insert, [[session, _negative_record]]})
 
-    assert session.is_bounce == false
+    assert session.is_bounce == 0
     assert session.duration == 10
     assert session.pageviews == 2
     assert session.events == 2
@@ -147,8 +147,8 @@ defmodule Plausible.Session.StoreTest do
       assert_receive({WriteBuffer, :insert, [[session2]]})
 
       assert session1.session_id != session2.session_id
-      assert session1.is_bounce
-      assert session2.is_bounce
+      assert session1.is_bounce == 1
+      assert session2.is_bounce == 1
       assert session2.duration == 0
     end
 
@@ -177,7 +177,7 @@ defmodule Plausible.Session.StoreTest do
 
       assert session1.session_id == negative_record.session_id
       assert session2.session_id == session1.session_id
-      refute session2.is_bounce
+      assert session2.is_bounce == 0
       assert session2.duration == 1799
     end
   end
@@ -211,7 +211,7 @@ defmodule Plausible.Session.StoreTest do
 
       assert session2.user_id == new_user_id
       assert session2.session_id == session1.session_id
-      refute session2.is_bounce
+      assert session2.is_bounce == 0
       assert negative_record.session_id == session1.session_id
     end
 
@@ -243,7 +243,7 @@ defmodule Plausible.Session.StoreTest do
 
       assert session2.session_id != session1.session_id
       assert session2.user_id == new_user_id
-      assert session2.is_bounce
+      assert session2.is_bounce == 1
     end
   end
 
@@ -329,11 +329,11 @@ defmodule Plausible.Session.StoreTest do
 
       session_key = {event1.domain, event1.user_id}
       assert Map.has_key?(sessions, session_key)
-      assert sessions[session_key].is_bounce
+      assert sessions[session_key].is_bounce == 1
       assert sessions[session_key].pageviews == 1
 
       sessions = Store.reconcile_event(sessions, event2)
-      refute sessions[session_key].is_bounce
+      assert sessions[session_key].is_bounce == 0
       assert sessions[session_key].pageviews == 2
       assert sessions[session_key].duration == 10
     end

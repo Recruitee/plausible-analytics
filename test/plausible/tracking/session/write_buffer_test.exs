@@ -69,7 +69,7 @@ defmodule Plausible.Session.WriteBufferTest do
           exit_page: "/db-integrity-exit",
           user_id: unique_user_id,
           session_id: unique_session_id,
-          is_bounce: false,
+          is_bounce: 0,
           pageviews: 7,
           events: 12,
           duration: 450,
