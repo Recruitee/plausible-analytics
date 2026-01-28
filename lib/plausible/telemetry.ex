@@ -24,7 +24,7 @@ defmodule Plausible.Telemetry do
   @impl true
   def init(_arg) do
     children =
-      case Application.get_env(:plausible, :env) do
+      case Mix.env() do
         :test ->
           # No telemetry in tests to avoid flooding test output
           []
@@ -67,7 +67,6 @@ defmodule Plausible.Telemetry do
         tags: [:buffer_type],
         tag_values: fn _meta -> %{buffer_type: "event"} end
       ),
-
       counter("careers_analytics.session.insert.count",
         event_name: [:plausible, :ingest, :buffer, :session, :insert],
         measurement: :count,
@@ -84,7 +83,6 @@ defmodule Plausible.Telemetry do
         tags: [:buffer_type],
         tag_values: fn _meta -> %{buffer_type: "event"} end
       ),
-
       last_value("careers_analytics.session.buffer_size",
         event_name: [:plausible, :ingest, :buffer, :session, :insert],
         measurement: :buffer_size,
@@ -105,7 +103,6 @@ defmodule Plausible.Telemetry do
         tags: [:buffer_type, :trigger],
         tag_values: fn meta -> %{buffer_type: "event", trigger: meta.trigger} end
       ),
-
       counter("careers_analytics.session.flush.total",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: fn _measurements -> 1 end,
@@ -123,7 +120,6 @@ defmodule Plausible.Telemetry do
         tag_values: fn meta -> %{buffer_type: "event", trigger: meta.trigger} end,
         unit: :unit
       ),
-
       distribution("careers_analytics.session.flush.size",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: :count,
@@ -145,7 +141,6 @@ defmodule Plausible.Telemetry do
           buckets: [10, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
         ]
       ),
-
       distribution("careers_analytics.session.flush.duration_ms",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: :duration,
@@ -170,7 +165,6 @@ defmodule Plausible.Telemetry do
           buckets: [100, 500, 1000, 2000, 5000, 10000, 30000, 60000]
         ]
       ),
-
       distribution("careers_analytics.session.flush.interval_ms",
         event_name: [:plausible, :ingest, :buffer, :session, :flush],
         measurement: :time_since_last_flush,
@@ -192,7 +186,6 @@ defmodule Plausible.Telemetry do
         tag_values: fn meta -> %{buffer_type: "event", trigger: meta.trigger} end,
         unit: :percent
       ),
-
       summary("careers_analytics.session.utilization_percent",
         event_name: [:plausible, :ingest, :buffer, :session, :utilization],
         measurement: :utilization,
@@ -210,7 +203,6 @@ defmodule Plausible.Telemetry do
         tags: [:buffer_type, :trigger],
         tag_values: fn meta -> %{buffer_type: "event", trigger: meta.trigger} end
       ),
-
       counter("careers_analytics.session.empty_flushes",
         event_name: [:plausible, :ingest, :buffer, :session, :empty_flush],
         measurement: fn _measurements -> 1 end,

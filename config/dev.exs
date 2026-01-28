@@ -68,5 +68,7 @@ config :plausible, Plausible.ClickhouseRepo,
 config :plausible,
   system_environment: "dev"
 
+config :opentelemetry, traces_exporter: :none
+
 # Logger level
 config :logger, level: :debug

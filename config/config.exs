@@ -7,8 +7,19 @@ config :plausible, PlausibleWeb.Endpoint, pubsub_server: Plausible.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,
+  level: :info,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+# Suppress DatadogStatsd warnings unless enabled
+config :plausible, Plausible.Telemetry.DatadogStatsd,
+  enabled: System.get_env("ENABLE_DD_STATS") || false
+
+# Suppress OpenTelemetry Exporter logs
+config :opentelemetry_exporter,
+  endpoints: [],
+  otlp_protocol: :http_protobuf,
+  log_level: :error
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
