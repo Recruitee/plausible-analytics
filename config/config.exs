@@ -20,10 +20,17 @@ config :plausible,
 
 config :plausible, Plausible.ClickhouseRepo, loggers: [Ecto.LogEntry]
 
-config :plausible, Plausible.Repo,
-  timeout: 300_000,
-  connect_timeout: 300_000,
-  handshake_timeout: 300_000
+# Keep 30 days history
+
+config :plausible, Oban,
+  repo: Plausible.Repo,
+  plugins: [{Oban.Plugins.Pruner, max_age: 2_592_000}],
+  queues: [
+    rotate_salts: 1
+  ],
+  crontab: [
+    {"0 0 * * *", Plausible.Tracking.Workers.RotateSalts}
+  ]
 
 config :plausible, :user_agent_cache,
   limit: 1000,
@@ -32,5 +39,12 @@ config :plausible, :user_agent_cache,
 config :plausible, :ingestion,
   buffer_size: 10_000,
   flush_interval_ms: 5000
+
+config :logger, backends: [:console]
+
+config :logger, Sentry.LoggerBackend,
+  capture_log_messages: true,
+  level: :error,
+  excluded_domains: []
 
 import_config "#{config_env()}.exs"

@@ -1,6 +1,15 @@
 import Config
 
 config :plausible, PlausibleWeb.Endpoint,
+  url: [
+    scheme: "http",
+    host: "localhost",
+    port: 8000
+  ],
+  http: [
+    port: 8000,
+    ip: {127, 0, 0, 1}
+  ],
   render_errors: [
     view: PlausibleWeb.ErrorView,
     accepts: ~w(html json)
@@ -35,3 +44,29 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Uncomment to enable console telemetry reporter for debugging
 # config :plausible, telemetry_console_reporter: true
+
+config :plausible, Plausible.Repo,
+  username: "postgres",
+  password: "postgres",
+  database: "plausible_dev",
+  hostname: "127.0.0.1",
+  port: 5430,
+  pool_size: 10,
+  queue_target: 2000,
+  queue_interval: 1000,
+  timeout: 60_000
+
+config :plausible, Plausible.ClickhouseRepo,
+  loggers: [Ecto.LogEntry],
+  queue_target: 500,
+  queue_interval: 2000,
+  database: "plausible_events_dev_db",
+  hostname: "127.0.0.1",
+  port: 18123
+
+# Environment identifiers
+config :plausible,
+  system_environment: "dev"
+
+# Logger level
+config :logger, level: :debug
