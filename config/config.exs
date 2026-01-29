@@ -39,4 +39,10 @@ config :opentelemetry_exporter,
 
 config :phoenix, :json_library, Jason
 
+config :ua_inspector,
+  database_path: Path.expand("../priv/ua_inspector", __DIR__)
+
+config :ref_inspector,
+  database_path: Path.expand("../priv/ref_inspector", __DIR__)
+
 import_config "#{config_env()}.exs"
