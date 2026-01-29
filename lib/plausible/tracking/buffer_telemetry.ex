@@ -27,7 +27,7 @@ defmodule Plausible.Tracking.BufferTelemetry do
       %{}
     )
 
-    Logger.info("Buffer telemetry handlers attached")
+    if telemetry_logging_enabled?(), do: Logger.info("Buffer telemetry handlers attached")
   end
 
   @doc """
@@ -36,10 +36,17 @@ defmodule Plausible.Tracking.BufferTelemetry do
   Logs metrics for observability and emits additional telemetry events
   for utilization percentage and empty flush tracking.
   """
-  def handle_event([:plausible, :ingest, :buffer, type, :insert], measurements, _metadata, _config) do
-    Logger.debug(
-      "[Buffer] #{type} insert: count=#{measurements.count}, buffer_size=#{measurements.buffer_size}"
-    )
+  def handle_event(
+        [:plausible, :ingest, :buffer, type, :insert],
+        measurements,
+        _metadata,
+        _config
+      ) do
+    if telemetry_logging_enabled?() do
+      Logger.debug(
+        "[Buffer] #{type} insert: count=#{measurements.count}, buffer_size=#{measurements.buffer_size}"
+      )
+    end
   end
 
   def handle_event([:plausible, :ingest, :buffer, type, :flush], measurements, metadata, _config) do
@@ -67,9 +74,15 @@ defmodule Plausible.Tracking.BufferTelemetry do
       )
     end
 
-    Logger.info(
-      "[Buffer] #{type} flush: trigger=#{trigger}, count=#{count}, " <>
-        "utilization=#{utilization}%, duration_ms=#{duration_ms}, time_since_last_ms=#{time_since_last_ms}"
-    )
+    if telemetry_logging_enabled?() do
+      Logger.info(
+        "[Buffer] #{type} flush: trigger=#{trigger}, count=#{count}, " <>
+          "utilization=#{utilization}%, duration_ms=#{duration_ms}, time_since_last_ms=#{time_since_last_ms}"
+      )
+    end
+  end
+
+  defp telemetry_logging_enabled? do
+    Application.get_env(:plausible, Plausible.Telemetry.DatadogStatsd)[:enabled]
   end
 end
