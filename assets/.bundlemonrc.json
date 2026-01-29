@@ -7,9 +7,6 @@
     },
     {
       "path": "static/css/app.css"
-    },
-    {
-      "path": "tracker/js/plausible.js"
     }
   ]
 }
