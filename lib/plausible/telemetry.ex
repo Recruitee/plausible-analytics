@@ -24,12 +24,12 @@ defmodule Plausible.Telemetry do
   @impl true
   def init(_arg) do
     children =
-      case Mix.env() do
-        :test ->
+      case Application.get_env(:plausible, :system_environment) do
+        "test" ->
           # No telemetry in tests to avoid flooding test output
           []
 
-        :dev ->
+        "dev" ->
           # Console reporter only if explicitly enabled via config
           if Application.get_env(:plausible, :telemetry_console_reporter, false) do
             [{Plausible.Telemetry.ConsoleReporter, metrics: metrics()}]

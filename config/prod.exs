@@ -5,3 +5,5 @@ config :plausible, PlausibleWeb.Endpoint,
   check_origin: false,
   server: true,
   code_reloader: false
+
+config :plausible, Plausible.Telemetry.DatadogStatsd, enabled: true
