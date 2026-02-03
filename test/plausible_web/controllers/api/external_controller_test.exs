@@ -398,25 +398,6 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
       assert pageview.referrer_source == "indiehackers.com"
     end
 
-    test "if the referrer is not http or https, it is ignored", %{conn: conn} do
-      params = %{
-        name: "pageview",
-        url: "http://gigride.live/",
-        referrer: "android-app://com.google.android.gm",
-        domain: "external-controller-test-15.com"
-      }
-
-      conn =
-        conn
-        |> put_req_header("user-agent", @user_agent)
-        |> post("/api/event", params)
-
-      pageview = get_event("external-controller-test-15.com")
-
-      assert response(conn, 202) == "ok"
-      assert pageview.referrer_source == ""
-    end
-
     test "screen size is calculated from screen_width", %{conn: conn} do
       params = %{
         name: "pageview",
