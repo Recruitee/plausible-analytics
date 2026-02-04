@@ -167,11 +167,8 @@ defmodule Plausible.Stats.Query do
     __MODULE__.from(tz, Map.merge(params, %{"period" => "30d"}))
   end
 
-  def put_filter(query, key, val) do
-    %__MODULE__{
-      query
-      | filters: Map.put(query.filters, key, val)
-    }
+  def put_filter(%__MODULE__{} = query, key, val) do
+    %{query | filters: Map.put(query.filters, key, val)}
   end
 
   def treat_page_filter_as_entry_page(%__MODULE__{filters: %{"visit:entry_page" => _}} = q), do: q
@@ -184,7 +181,7 @@ defmodule Plausible.Stats.Query do
 
   def treat_page_filter_as_entry_page(q), do: q
 
-  def remove_goal(query) do
+  def remove_goal(%__MODULE__{} = query) do
     props =
       Enum.map(query.filters, fn {key, _val} -> key end)
       |> Enum.filter(fn filter_key -> String.starts_with?(filter_key, "event:props:") end)
@@ -194,7 +191,7 @@ defmodule Plausible.Stats.Query do
       |> Map.drop(props)
       |> Map.delete("event:goal")
 
-    %__MODULE__{query | filters: new_filters}
+    %{query | filters: new_filters}
   end
 
   defp today(tz) do

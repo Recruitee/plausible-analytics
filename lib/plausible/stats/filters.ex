@@ -29,7 +29,7 @@ defmodule Plausible.Stats.Filters do
     @visit_props
   end
 
-  def add_prefix(query) do
+  def add_prefix(%Plausible.Stats.Query{} = query) do
     new_filters =
       Enum.reduce(query.filters, %{}, fn {name, val}, new_filters ->
         cond do
@@ -59,7 +59,7 @@ defmodule Plausible.Stats.Filters do
         end
       end)
 
-    %Plausible.Stats.Query{query | filters: new_filters}
+    %{query | filters: new_filters}
   end
 
   defp filter_value(key, "!" <> val) do

@@ -9,11 +9,11 @@ defmodule PlausibleWeb.Api.StatsController do
 
   def main_graph(conn, params) do
     site = conn.assigns[:site]
-    query = Query.from(site, params) |> Filters.add_prefix()
+    %Query{} = query = Query.from(site, params) |> Filters.add_prefix()
 
     timeseries_query =
       if query.period == "realtime" do
-        %Query{query | period: "30m"}
+        %{query | period: "30m"}
       else
         query
       end
@@ -569,11 +569,11 @@ defmodule PlausibleWeb.Api.StatsController do
     end
   end
 
-  defp maybe_hide_noref(query, property, params) do
+  defp maybe_hide_noref(%Query{} = query, property, params) do
     cond do
       is_nil(query.filters[property]) and params["show_noref"] != "true" ->
         new_filters = Map.put(query.filters, property, {:is_not, "Direct / None"})
-        %Query{query | filters: new_filters}
+        %{query | filters: new_filters}
 
       true ->
         query
