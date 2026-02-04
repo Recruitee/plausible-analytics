@@ -207,7 +207,7 @@ defmodule Plausible.Stats.Query do
   end
 
   defp parse_filters(%{"filters" => filters}) when is_binary(filters) do
-    case Jason.decode(filters) do
+    case JSON.decode(filters) do
       {:ok, parsed} -> parsed
       {:error, err} -> parse_filter_expression(err.data)
     end

@@ -52,7 +52,6 @@ defmodule Plausible.MixProject do
       {:ecto_ch, "~> 0.8.0"},
       {:ecto_sql, "~> 3.13"},
       {:httpoison, "~> 1.4"},
-      {:jason, "~> 1.3", override: true},
       {:location, git: "https://github.com/plausible/location.git", ref: "0c3b18a"},
       {:locus, "~> 2.3.10"},
       {:oban, "~> 2.20"},

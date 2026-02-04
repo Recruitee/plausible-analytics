@@ -58,7 +58,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
       conn =
         conn
         |> put_req_header("content-type", "text/plain")
-        |> post("/api/event", Jason.encode!(params))
+        |> post("/api/event", JSON.encode!(params))
 
       pageview = get_event("external-controller-test-text-plain.com")
 
@@ -576,7 +576,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
         name: "Signup",
         url: "http://gigride.live/",
         domain: "custom-prop-test-3.com",
-        props: Jason.encode!(%{number_test: 12})
+        props: JSON.encode!(%{number_test: 12})
       }
 
       conn
@@ -593,7 +593,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
         name: "Signup",
         url: "http://gigride.live/",
         domain: "custom-prop-test-4.com",
-        props: Jason.encode!(%{wat: ["some-thing"]})
+        props: JSON.encode!(%{wat: ["some-thing"]})
       }
 
       conn = post(conn, "/api/event", params)
@@ -611,7 +611,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
         name: "Signup",
         url: "http://gigride.live/",
         domain: "custom-prop-test-5.com",
-        props: Jason.encode!(%{foo: %{bar: "baz"}})
+        props: JSON.encode!(%{foo: %{bar: "baz"}})
       }
 
       conn = post(conn, "/api/event", params)
@@ -1065,7 +1065,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
     conn =
       conn
       |> put_req_header("content-type", "text/plain")
-      |> post("/api/event", Jason.encode!(params))
+      |> post("/api/event", JSON.encode!(params))
 
     pageview = get_event("url-with-hostname-missing.com")
 
@@ -1083,7 +1083,7 @@ defmodule PlausibleWeb.Api.ExternalControllerTest do
     conn =
       conn
       |> put_req_header("content-type", "text/plain")
-      |> post("/api/event", Jason.encode!(params))
+      |> post("/api/event", JSON.encode!(params))
 
     pageview = get_event("chrome-extension-url.com")
 

@@ -147,7 +147,7 @@ defmodule Plausible.Tracking.Actions.Event do
   def decode_raw_props(props) when is_map(props), do: {:ok, props}
 
   def decode_raw_props(raw_json) when is_binary(raw_json) do
-    case Jason.decode(raw_json) do
+    case JSON.decode(raw_json) do
       {:ok, parsed_props} when is_map(parsed_props) ->
         {:ok, parsed_props}
 
