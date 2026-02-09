@@ -17,13 +17,13 @@ defmodule Plausible.Tracking.Actions.EventTest do
       result = Event.extract_core_params(params)
 
       assert result == %{
-        "name" => "pageview",
-        "url" => "https://example.com/page",
-        "referrer" => "https://google.com",
-        "domain" => "example.com",
-        "screen_width" => 1920,
-        "hash_mode" => true
-      }
+               "name" => "pageview",
+               "url" => "https://example.com/page",
+               "referrer" => "https://google.com",
+               "domain" => "example.com",
+               "screen_width" => 1920,
+               "hash_mode" => true
+             }
     end
 
     test "extracts shorthand parameter names" do
@@ -39,13 +39,13 @@ defmodule Plausible.Tracking.Actions.EventTest do
       result = Event.extract_core_params(params)
 
       assert result == %{
-        "name" => "pageview",
-        "url" => "https://example.com/page",
-        "referrer" => "https://google.com",
-        "domain" => "example.com",
-        "screen_width" => 1920,
-        "hash_mode" => true
-      }
+               "name" => "pageview",
+               "url" => "https://example.com/page",
+               "referrer" => "https://google.com",
+               "domain" => "example.com",
+               "screen_width" => 1920,
+               "hash_mode" => true
+             }
     end
 
     test "shorthand takes precedence over full names" do
@@ -65,13 +65,13 @@ defmodule Plausible.Tracking.Actions.EventTest do
       result = Event.extract_core_params(params)
 
       assert result == %{
-        "name" => nil,
-        "url" => nil,
-        "referrer" => nil,
-        "domain" => nil,
-        "screen_width" => nil,
-        "hash_mode" => nil
-      }
+               "name" => nil,
+               "url" => nil,
+               "referrer" => nil,
+               "domain" => nil,
+               "screen_width" => nil,
+               "hash_mode" => nil
+             }
     end
   end
 

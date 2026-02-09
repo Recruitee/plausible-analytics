@@ -4,6 +4,6 @@ defmodule PlausibleWeb.StatsController do
   def index(conn, _params) do
     conn
     |> put_resp_header("x-robots-tag", "noindex")
-    |> render("index.html", site: %{}, title: "Careers Analytics")
+    |> render(:index, layout: {PlausibleWeb.Layouts, :app}, site: %{}, title: "Careers Analytics")
   end
 end

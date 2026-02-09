@@ -4,7 +4,7 @@ defmodule PlausibleWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :fetch_flash
+    plug :put_root_layout, html: {PlausibleWeb.Layouts, :root}
     plug :put_secure_browser_headers
     plug :protect_from_forgery
   end

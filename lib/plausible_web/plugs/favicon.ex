@@ -5,7 +5,7 @@ defmodule PlausibleWeb.Favicon do
     domains =
       case File.read(Application.app_dir(:plausible, "priv/referer_favicon_domains.json")) do
         {:ok, contents} ->
-          Jason.decode!(contents)
+          JSON.decode!(contents)
 
         _ ->
           %{}

@@ -70,14 +70,14 @@ defmodule Plausible.Stats.QueryTest do
 
   describe "filters" do
     test "parses goal filter" do
-      filters = Jason.encode!(%{"goal" => "Signup"})
+      filters = JSON.encode!(%{"goal" => "Signup"})
       q = Query.from(@site, %{"period" => "6mo", "filters" => filters})
 
       assert q.filters["goal"] == "Signup"
     end
 
     test "parses source filter" do
-      filters = Jason.encode!(%{"source" => "Twitter"})
+      filters = JSON.encode!(%{"source" => "Twitter"})
       q = Query.from(@site, %{"period" => "6mo", "filters" => filters})
 
       assert q.filters["source"] == "Twitter"

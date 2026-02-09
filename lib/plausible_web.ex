@@ -1,35 +1,24 @@
 defmodule PlausibleWeb do
-  def controller do
-    quote do
-      use Phoenix.Controller, namespace: PlausibleWeb
+  @moduledoc """
+  The entrypoint for defining your web interface, such
+  as controllers, components, channels, and so on.
 
-      import Plug.Conn
-      alias PlausibleWeb.Router.Helpers, as: Routes
-    end
-  end
+  This can be used in your application as:
 
-  def view do
-    quote do
-      use Phoenix.View,
-        root: "lib/plausible_web/templates",
-        namespace: PlausibleWeb
+      use PlausibleWeb, :controller
+      use PlausibleWeb, :html
 
-      # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1]
+  The definitions below will be executed for every controller,
+  component, etc, so keep them short and clean, focused
+  on imports, uses and aliases.
+  """
 
-      # Use all HTML functionality (forms, tags, etc)
-      import Phoenix.HTML
-      import Phoenix.HTML.Form
-      use PhoenixHTMLHelpers
-
-      import PlausibleWeb.ErrorHelpers
-      alias PlausibleWeb.Router.Helpers, as: Routes
-    end
-  end
+  def static_paths, do: ~w(css fonts images js favicon.ico robots.txt)
 
   def router do
     quote do
-      use Phoenix.Router
+      use Phoenix.Router, helpers: false
+
       import Plug.Conn
       import Phoenix.Controller
     end
@@ -38,6 +27,53 @@ defmodule PlausibleWeb do
   def channel do
     quote do
       use Phoenix.Channel
+    end
+  end
+
+  def controller do
+    quote do
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: PlausibleWeb.Layouts]
+
+      import Plug.Conn
+
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: PlausibleWeb.Endpoint,
+        router: PlausibleWeb.Router,
+        statics: PlausibleWeb.static_paths()
+    end
+  end
+
+  def html do
+    quote do
+      use Phoenix.Component
+
+      # Import convenience functions from controllers
+      import Phoenix.Controller,
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      # Include general helpers for rendering HTML
+      unquote(html_helpers())
+    end
+  end
+
+  defp html_helpers do
+    quote do
+      # HTML escaping functionality
+      import Phoenix.HTML
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
+
+      # Routes generation with the ~p sigil
+      unquote(verified_routes())
     end
   end
 

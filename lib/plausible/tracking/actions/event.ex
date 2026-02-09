@@ -50,7 +50,6 @@ defmodule Plausible.Tracking.Actions.Event do
 
     cond do
       is_bot?(ua) -> :ok
-      blacklisted_domain?(params["domain"]) -> :ok
       is_spammer?(params["referrer"]) -> :ok
       true -> process_event(conn, params, ua)
     end
@@ -114,11 +113,6 @@ defmodule Plausible.Tracking.Actions.Event do
 
   def is_bot?(_), do: false
 
-  @spec blacklisted_domain?(String.t() | nil) :: boolean()
-  def blacklisted_domain?(domain) do
-    domain in []
-  end
-
   @spec is_spammer?(String.t() | nil) :: boolean()
   def is_spammer?(nil), do: false
 
@@ -153,7 +147,7 @@ defmodule Plausible.Tracking.Actions.Event do
   def decode_raw_props(props) when is_map(props), do: {:ok, props}
 
   def decode_raw_props(raw_json) when is_binary(raw_json) do
-    case Jason.decode(raw_json) do
+    case JSON.decode(raw_json) do
       {:ok, parsed_props} when is_map(parsed_props) ->
         {:ok, parsed_props}
 

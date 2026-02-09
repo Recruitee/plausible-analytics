@@ -104,7 +104,6 @@ defmodule Plausible.Test.SessionHelpers do
     end
   end
 
-
   def wait_time_ms, do: 250
 
   def cleanup_sessions do

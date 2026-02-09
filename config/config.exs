@@ -25,7 +25,9 @@ config :plausible, Oban,
 config :plausible, Plausible.Telemetry.DatadogStatsd,
   enabled: System.get_env("ENABLE_DD_STATS") || false
 
-config :plausible, PlausibleWeb.Endpoint, pubsub_server: Plausible.PubSub
+config :plausible, PlausibleWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
+  pubsub_server: Plausible.PubSub
 
 config :logger, :console,
   level: :info,
@@ -37,7 +39,7 @@ config :opentelemetry_exporter,
   otlp_protocol: :http_protobuf,
   log_level: :error
 
-config :phoenix, :json_library, Jason
+config :phoenix, :json_library, JSON
 
 config :ua_inspector,
   database_path: Path.expand("../priv/ua_inspector", __DIR__)

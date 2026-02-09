@@ -210,7 +210,10 @@ defmodule Plausible.Stats.FilterSuggestions do
           )
 
         "browser" ->
-          from(e in q, select: {e.browser}, where: fragment("? ilike ?", e.browser, ^filter_query))
+          from(e in q,
+            select: {e.browser},
+            where: fragment("? ilike ?", e.browser, ^filter_query)
+          )
 
         "browser_version" ->
           from(e in q,

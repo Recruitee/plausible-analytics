@@ -44,7 +44,7 @@ defmodule PlausibleWeb.Api.ExternalController do
       %Plug.Conn.Unfetched{} ->
         {:ok, body, _conn} = Plug.Conn.read_body(conn)
 
-        case Jason.decode(body) do
+        case JSON.decode(body) do
           {:ok, params} -> {:ok, params}
           _ -> {:error, :invalid_json}
         end

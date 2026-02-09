@@ -12,8 +12,8 @@ config :plausible, PlausibleWeb.Endpoint,
     ip: {127, 0, 0, 1}
   ],
   render_errors: [
-    view: PlausibleWeb.ErrorView,
-    accepts: ~w(html json)
+    formats: [html: PlausibleWeb.ErrorHTML, json: PlausibleWeb.ErrorJSON],
+    layout: false
   ],
   server: true,
   debug_errors: true,
