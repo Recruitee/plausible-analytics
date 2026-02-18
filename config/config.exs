@@ -27,7 +27,11 @@ config :plausible, Plausible.Telemetry.DatadogStatsd,
 
 config :plausible, PlausibleWeb.Endpoint,
   adapter: Bandit.PhoenixAdapter,
-  pubsub_server: Plausible.PubSub
+  pubsub_server: Plausible.PubSub,
+  render_errors: [
+    formats: [html: PlausibleWeb.ErrorHTML, json: PlausibleWeb.ErrorJSON],
+    layout: false
+  ]
 
 config :logger, :console,
   level: :info,
