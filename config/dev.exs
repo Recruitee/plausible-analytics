@@ -11,10 +11,6 @@ config :plausible, PlausibleWeb.Endpoint,
     port: 8000,
     ip: {127, 0, 0, 1}
   ],
-  render_errors: [
-    formats: [html: PlausibleWeb.ErrorHTML, json: PlausibleWeb.ErrorJSON],
-    layout: false
-  ],
   server: true,
   debug_errors: true,
   code_reloader: true,
