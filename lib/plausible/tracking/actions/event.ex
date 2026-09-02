@@ -8,9 +8,6 @@ defmodule Plausible.Tracking.Actions.Event do
 
   @no_domain_error {:error, %{domain: ["can't be blank"]}}
 
-  # City geoname ID overrides for specific locations
-  @city_overrides %{}
-
   @doc """
   Creates an event from the given connection and parameters.
 
@@ -232,12 +229,9 @@ defmodule Plausible.Tracking.Actions.Event do
   def get_city_geoname_id(nil), do: ""
 
   def get_city_geoname_id(geo_data) do
-    city =
-      geo_data
-      |> Map.get("city", %{})
-      |> Map.get("geoname_id", "")
-
-    Map.get(@city_overrides, city, city)
+    geo_data
+    |> Map.get("city", %{})
+    |> Map.get("geoname_id", "")
   end
 
   @spec get_subdivision_code(map() | nil, non_neg_integer()) :: String.t()

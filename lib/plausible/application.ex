@@ -46,7 +46,7 @@ defmodule Plausible.Application do
   end
 
   def setup_sentry() do
-    Logger.add_backend(Sentry.LoggerBackend)
+    :logger.add_handler(:sentry, Sentry.LoggerHandler, %{config: %{metadata: [:file, :line]}})
 
     :telemetry.attach_many(
       "oban-errors",
