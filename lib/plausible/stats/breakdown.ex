@@ -6,7 +6,7 @@ defmodule Plausible.Stats.Breakdown do
 
   @event_metrics [:visitors, :pageviews, :events]
   @session_metrics [:visits, :bounce_rate, :visit_duration]
-  @event_props ["event:page", "event:page_match", "event:name"]
+  @event_props ["event:page", "event:name"]
 
   def breakdown(site, query, "event:page", metrics, pagination) do
     event_metrics = Enum.filter(metrics, &(&1 in @event_metrics))
@@ -178,23 +178,6 @@ defmodule Plausible.Stats.Breakdown do
       group_by: e.pathname,
       select_merge: %{page: e.pathname}
     )
-  end
-
-  defp do_group_by(
-         %Ecto.Query{from: %Ecto.Query.FromExpr{source: {"events", _}}} = q,
-         "event:page_match"
-       ) do
-    case Map.get(q, :__private_match_sources__) do
-      match_exprs when is_list(match_exprs) ->
-        from(
-          e in q,
-          group_by: fragment("index"),
-          select_merge: %{
-            index: fragment("arrayJoin(indices) as index"),
-            page_match: fragment("array(?)[index]", ^match_exprs)
-          }
-        )
-    end
   end
 
   defp do_group_by(q, "visit:source") do
