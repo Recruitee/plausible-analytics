@@ -5,7 +5,7 @@ defmodule Plausible.MixProject do
     [
       app: :plausible,
       version: System.get_env("APP_VERSION", "0.0.1"),
-      elixir: "~> 1.19.5",
+      elixir: "~> 1.20",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -81,7 +81,7 @@ defmodule Plausible.MixProject do
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_metrics_statsd, "~> 0.7"},
       {:timex, "~> 3.7"},
-      {:tzdata, "~> 1.1.2"},
+      {:tzdata, "~> 1.1.4"},
       {:ua_inspector, "~> 3.11"},
 
       # Dev only dependencies
