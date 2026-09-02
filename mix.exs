@@ -66,7 +66,7 @@ defmodule Plausible.MixProject do
       {:phoenix, "~> 1.8"},
       {:phoenix_ecto, "~> 4.7"},
       {:phoenix_html, "~> 4.3"},
-      {:phoenix_live_view, "~> 1.0"},
+      {:phoenix_live_view, "~> 1.1.24"},
       {:phoenix_pubsub, "~> 2.0"},
       {:plug, "~> 1.19"},
       {:bandit, "~> 1.6"},
