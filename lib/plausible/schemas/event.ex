@@ -5,6 +5,8 @@ defmodule Plausible.Event do
 
   alias Plausible.ValueHelpers
 
+  @max_uint64 18_446_744_073_709_551_615
+
   @primary_key false
   schema "events" do
     field :company_id, Ch, type: "UInt64"
@@ -87,8 +89,21 @@ defmodule Plausible.Event do
       empty_values: [nil, ""]
     )
     |> validate_required([:name, :domain, :hostname, :pathname, :event_id, :user_id, :timestamp])
+    |> validate_uint64(:company_id)
+    |> validate_uint64(:site_id)
+    |> validate_uint64(:page_id)
+    |> validate_uint64(:job_id)
     |> validate_campaign_id()
     |> validate_product_id()
+  end
+
+  # These IDs come from the browser. ClickHouse stores them as UInt64; out-of-range values
+  # used to wrap silently on insert, and ch >= 0.9 raises instead, failing the whole batch.
+  defp validate_uint64(changeset, field) do
+    validate_number(changeset, field,
+      greater_than_or_equal_to: 0,
+      less_than_or_equal_to: @max_uint64
+    )
   end
 
   defp validate_campaign_id(changeset) do

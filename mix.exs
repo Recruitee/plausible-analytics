@@ -49,20 +49,23 @@ defmodule Plausible.MixProject do
     [
       {:cachex, "~> 4.1"},
       {:cors_plug, "~> 3.0"},
-      {:ecto_ch, "~> 0.8.0"},
+      # o11y (via open_telemetry_decorator) still declares decimal ~> 2.0; ecto_ch 0.11 needs 3.x.
+      {:decimal, "~> 3.0", override: true},
+      {:ecto_ch, "~> 0.11"},
       {:ecto_sql, "~> 3.13"},
-      {:httpoison, "~> 1.4"},
+      {:finch, "~> 0.25"},
+      # ua_inspector and ref_inspector still declare hackney ~> 1.0 but only use it to download
+      # their databases. hackney 1.x has open advisories, so force 4.x like upstream Plausible.
+      {:hackney, "~> 4.12", override: true},
+      # referrer_blocklist still declares httpoison ~> 1.4; 1.x breaks on hackney 4.
+      {:httpoison, "~> 3.0", override: true},
       {:location, git: "https://github.com/plausible/location.git", ref: "0c3b18a"},
       {:locus, "~> 2.3.10"},
       {:oban, "~> 2.20"},
       {:open_telemetry_decorator, "~> 1.5"},
       {:opentelemetry, "~> 1.7"},
       {:opentelemetry_api, "~> 1.5"},
-      {:opentelemetry_ecto, "~> 1.2"},
       {:opentelemetry_exporter, "~> 1.10"},
-      {:opentelemetry_bandit, "~> 0.1.0"},
-      {:opentelemetry_oban, "~> 1.1"},
-      {:opentelemetry_phoenix, "~> 1.2"},
       {:phoenix, "~> 1.8"},
       {:phoenix_ecto, "~> 4.7"},
       {:phoenix_html, "~> 4.3"},
@@ -75,13 +78,13 @@ defmodule Plausible.MixProject do
       {:ref_inspector, "~> 2.1"},
       {:referrer_blocklist,
        git: "https://github.com/plausible/referrer-blocklist.git", ref: "d6f52c2"},
-      {:sentry, "~> 11.0"},
+      {:sentry, "~> 14.0"},
       {:siphash, "~> 3.2"},
       {:telemetry, "~> 1.3"},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_metrics_statsd, "~> 0.7"},
       {:timex, "~> 3.7"},
-      {:tzdata, "~> 1.1.4"},
+      {:tzdata, "~> 1.2"},
       {:ua_inspector, "~> 3.11"},
 
       # Dev only dependencies
